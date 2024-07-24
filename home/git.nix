@@ -3,10 +3,10 @@
   programs.git = {
     enable = true;
 
-    userName = "ozwaldorf";
-    userEmail = "self@ossian.dev";
+    userName = "qti3e";
+    userEmail = "i@parsa.ooo";
     signing = {
-      key = "~/.ssh/id_ecdsa.pub";
+      key = "~/.ssh/id_ed25519.pub";
       signByDefault = true;
     };
     extraConfig = {
