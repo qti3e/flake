@@ -80,7 +80,6 @@
       "quiet"
       "splash"
       "udev.log_level=0"
-      "video=eDP-1:2650x1600@60"
     ];
   };
 
@@ -90,14 +89,6 @@
     enable = true;
     enable32Bit = true;
   };
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    powerManagement.finegrained = false;
-    open = false;
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
 
   hardware.bluetooth = {
     enable = true;
@@ -106,7 +97,7 @@
   services.blueman.enable = true;
 
   services.xserver.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
+  # services.xserver.videoDrivers = [ "nvidia" ];
   # services.xserver.displayManager.gdm = {
   #   enable = true;
   #   wayland = true;
@@ -201,12 +192,11 @@
       enable = true;
       enableCompletion = false;
     };
-
     # Same for sway and hyprland, install to system to ensure wayland sessions are propagated correctly.
     sway = {
       enable = true;
       package = pkgs.swayfx;
-      extraOptions = [ "--unsupported-gpu" ];
+      # extraOptions = [ "--unsupported-gpu" ];
     };
     hyprland.enable = true;
 

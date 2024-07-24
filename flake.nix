@@ -50,8 +50,8 @@
     }@inputs:
     let
       # Nixos system variables
-      hostname = "onix";
-      username = "oz";
+      hostname = "nixos";
+      username = "qti3e";
 
       # Absolute path to the directory containing this flake.
       # Used for creating "out of store" symlinks. For example, mostly
@@ -105,6 +105,7 @@
             # User level config
             {
               home-manager = {
+                backupFileExtension = "backup";
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 extraSpecialArgs = specialArgs;
