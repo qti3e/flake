@@ -56,7 +56,7 @@
       # Absolute path to the directory containing this flake.
       # Used for creating "out of store" symlinks. For example, mostly
       # in order to allow in-app setting changes to modify the flake.
-      flakeDirectory = "/etc/nixos";
+      flakeDirectory = "/home/qti3e/Code/flake";
 
       # Flake utilities
       overlay = import ./pkgs inputs;
