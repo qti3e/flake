@@ -14,13 +14,127 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         tabstop = 2;
         shiftwidth = 2;
         expandtab = true;
-        mouse = "a";
+        mouse = "";
         number = true;
         undofile = true;
         foldenable = false;
       };
 
       keymaps = [
+        {
+          key = "<leader>tp";
+          action.__raw = ''
+            function()
+              local S = require('nvim-autopairs').state
+              S.disabled = not S.disabled
+            end
+          '';
+          mode = [ "n" ];
+        }
+        {
+          key = "!";
+          action.__raw = "require('lsp_lines').toggle";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>g";
+          action = "<cmd>BufferLinePick<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>p";
+          action = "<cmd>BufferLineTogglePin<CR>";
+          mode = [ "n" ];
+        }
+
+        # Re-order to previous/next
+        {
+          key = "<C-b>mh";
+          action = "<cmd>BufferLineMovePrev<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>ml";
+          action = "<cmd>BufferLineMoveNext<CR>";
+          mode = [ "n" ];
+        }
+
+        # Go to previous/next
+        {
+          key = "<C-b>h";
+          action = "<cmd>BufferLineCyclePrev<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>l";
+          action = "<cmd>BufferLineCycleNext<CR>";
+          mode = [ "n" ];
+        }
+
+        # Go to buffer by position
+        {
+          key = "<C-b>1";
+          action = "<cmd>BufferLineGoToBuffer 1<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>2";
+          action = "<cmd>BufferLineGoToBuffer 2<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>3";
+          action = "<cmd>BufferLineGoToBuffer 3<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>4";
+          action = "<cmd>BufferLineGoToBuffer 4<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>5";
+          action = "<cmd>BufferLineGoToBuffer 5<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>6";
+          action = "<cmd>BufferLineGoToBuffer 6<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>7";
+          action = "<cmd>BufferLineGoToBuffer 7<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>8";
+          action = "<cmd>BufferLineGoToBuffer 8<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>9";
+          action = "<cmd>BufferLineGoToBuffer 9<CR>";
+          mode = [ "n" ];
+        }
+
+        # To close buffers:
+        {
+          key = "<C-b>qa";
+          action = "<cmd>BufferLineCloseOthers<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>qh";
+          action = "<cmd>BufferLineCloseLeft<CR>";
+          mode = [ "n" ];
+        }
+        {
+          key = "<C-b>ql";
+          action = "<cmd>BufferLineCloseRight<CR>";
+          mode = [ "n" ];
+        }
+
         {
           # Toggle nvim tree
           key = "t";
@@ -173,6 +287,8 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       '';
 
       extraConfigLua = ''
+        vim.wo.relativenumber = true
+
         require("scrollbar").setup({
           handlers = {
             cursor = true,
@@ -208,6 +324,14 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       ];
 
       plugins = {
+        wakatime = {
+          enable = true;
+        };
+
+        neoscroll = {
+          enable = true;
+        };
+
         lsp = {
           enable = true;
           inlayHints = true;
@@ -461,21 +585,32 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
                   local day_part = ({ 'evening', 'morning', 'afternoon', 'evening' })[part_id]
                   local username = vim.loop.os_get_passwd()['username'] or 'USERNAME'
                   return ([[
-                `7MM"""Yb.                    db  mm
-                  MM    `Yb.                  '/  MM
-                  MM     `Mb  ,pW"Wq.`7MMpMMMb. mmMMmm
-                  MM      MM 6W'   `Wb MM    MM   MM
-                  MM     ,MP 8M     M8 MM    MM   MM
-                  MM    ,dP' YA.   ,A9 MM    MM   MM
-                .JMMmmmdP'    `Ybmd9'.JMML  JMML. `Mbmo
+                       ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄
+                      ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
+                      ▐░█▀▀▀▀▀▀▀█░▌▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀
+                      ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌               ▐░▌
+                      ▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄      ▐░▌
+                      ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌     ▐░▌
+                      ▐░█▀▀▀▀█░█▀▀ ▐░▌       ▐░▌ ▀▀▀▀▀▀▀▀▀█░▌     ▐░▌
+                      ▐░▌     ▐░▌  ▐░▌       ▐░▌          ▐░▌     ▐░▌
+                      ▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄█░▌ ▄▄▄▄▄▄▄▄▄█░▌     ▐░▌
+                      ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌     ▐░▌
+                       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀       ▀
 
-                `7MM"""Mq.                     db          OO
-                  MM   `MM.                                88
-                  MM   ,M9 ,6"Yb. `7MMpMMMb. `7MM  ,p6"bo  ||
-                  MMmmdM9 8)   MM   MM    MM   MM 6M'  OO  ||
-                  MM       ,pm9MM   MM    MM   MM 8M       `'
-                  MM      8M   MM   MM    MM   MM YM.    , ,,
-                .JMML.    `Moo9^Yo.JMML  JMML.JMML.YMbmd'  db
+                                           ▄▄       ▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄
+                                          ▐░░▌     ▐░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
+                                          ▐░▌░▌   ▐░▐░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀
+                                          ▐░▌▐░▌ ▐░▌▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌
+                                          ▐░▌ ▐░▐░▌ ▐░▌▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄
+                                          ▐░▌  ▐░▌  ▐░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
+                                          ▐░▌   ▀   ▐░▌▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░█▀▀▀▀▀▀▀▀▀
+                                          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌
+                                          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄▄▄
+                                          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌
+                                           ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀
+
+
+
 
                 ~ Good %s, %s]]):format(day_part, username)
                 end
@@ -568,3 +703,36 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
     };
   };
 }
+
+# `7MM"""Mq.                                      db   mm                 db   mm         db
+#   MM   `MM.                                          MM                      MM
+#   MM   ,M9  .gP"Ya `7M'    ,A    `MF'`7Mb,od8 `7MM mmMMmm .gP"Ya      `7MM mmMMmm     `7MM  `7MMpMMMb.
+#   MMmmdM9  ,M'   Yb  VA   ,VAA   ,V    MM' "'   MM   MM  ,M'   Yb       MM   MM         MM    MM    MM
+#   MM  YM.  8M""""""   VA ,V  VA ,V     MM       MM   MM  8M""""""       MM   MM         MM    MM    MM
+#   MM   `Mb.YM.    ,    VVV    VVV      MM       MM   MM  YM.    ,       MM   MM         MM    MM    MM
+# .JMML. .JMM.`Mbmmd'     W      W     .JMML.   .JMML. `Mbmo`Mbmmd'     .JMML. `Mbmo    .JMML..JMML  JMML.
+
+#         `7MM"""Mq.                       mm
+#           MM   `MM.                      MM
+#           MM   ,M9 `7MM  `7MM  ,pP"Ybd mmMMmm
+#           MMmmdM9    MM    MM  8I   `"   MM
+#           MM  YM.    MM    MM  `YMMMa.   MM
+#           MM   `Mb.  MM    MM  L.   I8   MM
+#         .JMML. .JMM. `Mbod"YML.M9mmmP'   `Mbmo
+
+#                   `7MMM.     ,MMF'
+#                     MMMb    dPMM
+#                     M YM   ,M MM  ,pW"Wq.`7Mb,od8 .gP"Ya
+#                     M  Mb  M' MM 6W'   `Wb MM' "',M'   Yb
+#                     M  YM.P'  MM 8M     M8 MM    8M""""""
+#                     M  `YM'   MM YA.   ,A9 MM    YM.    ,
+#                   .JML. `'  .JMML.`Ybmd9'.JMML.   `Mbmmd'
+
+#                               ,,
+#     .g8"""bgd               `7MM
+#   .dP'     `M                 MM
+#   dM'       ` ,pW"Wq.    ,M""bMM  .gP"Ya
+#   MM         6W'   `Wb ,AP    MM ,M'   Yb
+#   MM.        8M     M8 8MI    MM 8M""""""
+#   `Mb.     ,'YA.   ,A9 `Mb    MM YM.    ,
+#     `"bmmmd'  `Ybmd9'   `Wbmd"MML.`Mbmmd'
