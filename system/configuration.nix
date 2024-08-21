@@ -46,8 +46,9 @@
     hostName = hostname;
     networkmanager.enable = true;
     nameservers = [
-      "1.1.1.1"
-      "9.9.9.9"
+      # "9.9.9.9" # quad9
+      # "1.1.1.1" # cloudflare
+      "8.8.8.8" # google
     ];
     hosts = {
       "127.0.0.1" = [
@@ -194,6 +195,16 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
+    wireplumber = {
+      enable = true;
+      extraConfig = {
+        "10-disable-camera" = {
+          "wireplumber.profiles" = {
+            main."monitor.libcamera" = "disabled";
+          };
+        };
+      };
+    };
   };
   hardware.enableAllFirmware = true;
 
