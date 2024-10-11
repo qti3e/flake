@@ -1,5 +1,50 @@
 local wezterm = require 'wezterm'
 
+-- < start of wide screen window config
+function recompute_padding(window)
+  local window_dims = window:get_dimensions()
+  local overrides = window:get_config_overrides() or {}
+
+  local is_screen_large = window_dims.pixel_width > 5000
+
+  if not is_screen_large then
+    if not overrides.window_padding and not overrides.background then
+      -- not changing anything
+      return
+    end
+    overrides.window_padding = nil
+    overrides.background = nil
+  else
+    local padding = (window_dims.pixel_width - 2200) / 2
+    local new_padding = {
+      left = padding,
+      right = padding,
+      top = '2.2cell',
+      bottom = '2.0cell',
+    }
+
+    if
+        overrides.window_padding
+        and new_padding.left == overrides.window_padding.left
+    then
+      -- padding is same, avoid triggering further changes
+      return
+    end
+    overrides.window_padding = new_padding
+  end
+  window:set_config_overrides(overrides)
+end
+
+wezterm.on('window-resized', function(window, pane)
+  recompute_padding(window)
+end)
+
+wezterm.on('window-config-reloaded', function(window)
+  recompute_padding(window)
+end)
+-- end of wide screen window config />
+
+
 local tab_colors = {
   "Navy", "Red", "Green", "Olive", "Maroon", "Purple", "Teal", "Lime", "Yellow", "Blue", "Fuchsia", "Aqua"
 }
@@ -37,15 +82,15 @@ return {
     --'Fira Code Nerd Font',
     'Symbols Nerd Font',
   },
-  font_size = 10,
+  font_size = 16,
   window_background_opacity = 0.8,
   text_background_opacity = 1.0,
   -- window_decorations = "NONE",
   window_padding = {
-    left = '4.5cell',
-    right = '4.0cell',
-    top = '2.2cell',
-    bottom = '2.0cell',
+    left = '1.5cell',
+    right = '1.0cell',
+    top = '0.2cell',
+    bottom = '0.0cell',
   },
   color_scheme = "Carburator",
   inactive_pane_hsb = {
@@ -53,7 +98,7 @@ return {
     brightness = 1.0,
   },
   use_fancy_tab_bar = false,
-  tab_bar_at_bottom = false,
+  tab_bar_at_bottom = true,
   colors = {
     tab_bar = {
       active_tab = { bg_color = tab_bg, fg_color = "#f4f4f4" },

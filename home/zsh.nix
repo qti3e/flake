@@ -31,7 +31,7 @@
       }
     ];
 
-    shellAliases = with { ls_args = "--git --icons"; }; {
+    shellAliases = with { ls_args = "--git --icons --group-directories-first"; }; {
       ls = "eza -lh ${ls_args}";
       la = "eza -lah ${ls_args}";
       l = "eza -lah ${ls_args}";

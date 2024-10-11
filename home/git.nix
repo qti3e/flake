@@ -20,6 +20,7 @@
       ".envrc"
       ".direnv"
       "result"
+      ".parsa"
     ];
     delta = {
       enable = true;

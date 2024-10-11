@@ -654,8 +654,10 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       };
       match.ExtraWhitespace = "\\s\\+$";
 
+      colorscheme = "darkblue";
+
       colorschemes.catppuccin = {
-        enable = true;
+        # enable = true;
         settings = {
           transparent_background = true;
           color_overrides.all = {

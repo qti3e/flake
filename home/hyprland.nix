@@ -71,6 +71,7 @@ in
         "blur,applauncher*"
         "ignorealpha,applauncher*"
       ];
+      # workspace = [ "w[t1], gapsout:10 1200" ];
       bindm = [
         "${mod},mouse:272,movewindow"
         "${mod},mouse:273,resizewindow"
