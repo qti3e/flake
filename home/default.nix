@@ -17,6 +17,7 @@
     ./sway.nix # window manager
     ./hyprland.nix # other window manager
     ./gtk.nix # gtk theming
+    ./obs.nix # OBS Studio
     ./ags # bar, app launcher
     ./wezterm # terminal
     ./vesktop # discord
