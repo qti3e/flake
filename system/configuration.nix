@@ -136,14 +136,15 @@
     plymouth = {
       enable = true;
     };
-    kernelPackages = pkgs.linuxPackages_6_8;
     consoleLogLevel = 0;
     initrd.verbose = false;
     kernelParams = [
       "quiet"
       "splash"
       "udev.log_level=0"
+      # "video=eDP-1:2650x1600@60"
     ];
+    kernelPackages = pkgs.linuxPackages_6_11;
   };
 
   # QMK keyboard
@@ -300,16 +301,16 @@
     file-roller.enable = true; # archive manager
     gnome-disks.enable = true; # disk manager
 
-    # Add `open in wezterm` entry to nautilus
+    # Add `open in foot` entry to nautilus
     nautilus-open-any-terminal = {
       enable = true;
-      terminal = "wezterm";
+      terminal = "foot";
     };
   };
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    WLR_NO_HARDWARE_CURSORS = "1";
+    # WLR_NO_HARDWARE_CURSORS = "1";
   };
 
   # This value determines the NixOS release from which the default
