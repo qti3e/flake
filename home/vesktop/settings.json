@@ -276,7 +276,7 @@
             "enabled": true,
             "deleteStyle": "text",
             "logDeletes": true,
-            "collapseDeleted": false,
+            "collapseDeleted": true,
             "logEdits": true,
             "inlineEdits": true,
             "ignoreBots": true,
