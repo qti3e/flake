@@ -7,6 +7,7 @@ inputs: final: prev: {
     inherit inputs;
     pkgs = prev;
   };
+
   standalone = import ./standalone.nix {
     inherit inputs;
     pkgs = final;

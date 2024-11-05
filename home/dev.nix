@@ -6,6 +6,7 @@
 
       deno
       gnumake
+      litemdview
 
       inotify-tools
       nix-tree

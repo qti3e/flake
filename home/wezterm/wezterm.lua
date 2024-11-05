@@ -82,7 +82,7 @@ return {
     --'Fira Code Nerd Font',
     'Symbols Nerd Font',
   },
-  font_size = 16,
+  font_size = 13,
   window_background_opacity = 0.8,
   text_background_opacity = 1.0,
   -- window_decorations = "NONE",

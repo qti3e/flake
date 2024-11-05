@@ -30,33 +30,38 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             end
           '';
           mode = [ "n" ];
+          options.desc = "Toggle Autopairs";
         }
         {
           key = "!";
           action.__raw = "require('lsp_lines').toggle";
           mode = [ "n" ];
+          options.desc = "Toggle LspLines";
         }
         {
           key = "<C-b>g";
           action = "<cmd>BufferLinePick<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Pick";
         }
         {
           key = "<C-b>p";
           action = "<cmd>BufferLineTogglePin<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Toggle Pin";
         }
 
-        # Re-order to previous/next
         {
           key = "<C-b>mh";
           action = "<cmd>BufferLineMovePrev<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Move Prev";
         }
         {
           key = "<C-b>ml";
           action = "<cmd>BufferLineMoveNext<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Move Next";
         }
 
         # Go to previous/next
@@ -64,11 +69,13 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           key = "<C-b>h";
           action = "<cmd>BufferLineCyclePrev<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Cycle Prev";
         }
         {
           key = "<C-b>l";
           action = "<cmd>BufferLineCycleNext<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Cycle Next";
         }
 
         # Go to buffer by position
@@ -76,46 +83,55 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           key = "<C-b>1";
           action = "<cmd>BufferLineGoToBuffer 1<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 1";
         }
         {
           key = "<C-b>2";
           action = "<cmd>BufferLineGoToBuffer 2<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 2";
         }
         {
           key = "<C-b>3";
           action = "<cmd>BufferLineGoToBuffer 3<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 3";
         }
         {
           key = "<C-b>4";
           action = "<cmd>BufferLineGoToBuffer 4<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 4";
         }
         {
           key = "<C-b>5";
           action = "<cmd>BufferLineGoToBuffer 5<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 5";
         }
         {
           key = "<C-b>6";
           action = "<cmd>BufferLineGoToBuffer 6<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 6";
         }
         {
           key = "<C-b>7";
           action = "<cmd>BufferLineGoToBuffer 7<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 7";
         }
         {
           key = "<C-b>8";
           action = "<cmd>BufferLineGoToBuffer 8<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 8";
         }
         {
           key = "<C-b>9";
           action = "<cmd>BufferLineGoToBuffer 9<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Goto 9";
         }
 
         # To close buffers:
@@ -123,16 +139,19 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           key = "<C-b>qa";
           action = "<cmd>BufferLineCloseOthers<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Close Others";
         }
         {
           key = "<C-b>qh";
           action = "<cmd>BufferLineCloseLeft<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Close Left";
         }
         {
           key = "<C-b>ql";
           action = "<cmd>BufferLineCloseRight<CR>";
           mode = [ "n" ];
+          options.desc = "BufferLine Close Right";
         }
 
         {
@@ -140,72 +159,112 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           key = "t";
           action = "<cmd>NvimTreeToggle<CR>";
           mode = [ "n" ];
+          options.desc = "Toggle File Tree";
         }
         {
           # Toggle trouble window with all current lsp errors
           key = "T";
-          action = "<cmd>TroubleToggle<CR>";
+          action = "<cmd>Trouble diagnostics toggle<CR>";
           mode = [ "n" ];
+          options.desc = "Toggle Diagnostics";
         }
         {
           # Show hover actions
           key = "K";
           action.__raw = "vim.lsp.buf.hover";
           mode = [ "n" ];
+          options.desc = "Show hover actions";
         }
         {
-          # Toggle git diff overlay0
+          # Toggle git diff overlay
           key = "go";
           action.__raw = "MiniDiff.toggle_overlay";
           mode = [ "n" ];
+          options.desc = "Toggle git diff overlay";
         }
         {
           # Jump definition
           key = "gd";
           action.__raw = "vim.lsp.buf.definition";
           mode = [ "n" ];
+          options.desc = "Jump definition";
         }
         {
           # Jump declaration
           key = "gD";
           action.__raw = "vim.lsp.buf.declaration";
           mode = [ "n" ];
+          options.desc = "Jump declaration";
         }
         {
           # Jump implementation
           key = "gi";
           action.__raw = "vim.lsp.buf.implementation";
           mode = [ "n" ];
+          options.desc = "Jump implementation";
         }
         {
           # References
           key = "gr";
           action.__raw = "vim.lsp.buf.references";
           mode = [ "n" ];
+          options.desc = "Show References";
         }
         {
           # Rename
           key = "gR";
           action.__raw = "vim.lsp.buf.rename";
           mode = [ "n" ];
+          options.desc = "Lsp Symbol Rename";
         }
         {
           # Format
           key = "gf";
           action.__raw = "vim.lsp.buf.format";
           mode = [ "n" ];
+          options.desc = "Lsp Format Buffer";
         }
         {
           # Next diagnostic
           key = "gn";
           action.__raw = "vim.diagnostic.goto_next";
           mode = [ "n" ];
+          options.desc = "Next diagnostic";
         }
         {
           # Previous diagnostic
           key = "gN";
           action.__raw = "vim.diagnostic.goto_prev";
           mode = [ "n" ];
+          options.desc = "Prev diagnostic";
+        }
+        {
+          # Show buffers
+          key = "gb";
+          action = "<Esc>:Telescope buffers<CR>";
+          mode = [ "n" ];
+          options.desc = "Show buffers";
+        }
+        {
+          # Show files
+          key = "gf";
+          action = "<Esc>:Telescope find_files<CR>";
+          mode = [ "n" ];
+          options.desc = "Show files";
+        }
+        {
+          # Show symbols
+          key = "gs";
+          action = "<Esc>:Telescope lsp_dynamic_workspace_symbols<CR>";
+          mode = [ "n" ];
+          options.desc = "Show workplace symbols";
+        }
+        {
+          # Show document symbols
+          key = "gS";
+          action = "<Esc>:Telescope lsp_document_symbols<CR>";
+          mode = [ "n" ];
+          options.desc = "Show document symbols";
         }
         {
           # Show code actions
@@ -216,6 +275,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             "v"
             "i"
           ];
+          options.desc = "Show code actions";
         }
         {
           # Ctrl-S save and escape
@@ -226,6 +286,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             "v"
             "i"
           ];
+          options.desc = "Save";
         }
         {
           # Jump forward if completing a snippet (ie, function parameter placeholders)
@@ -273,6 +334,8 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       ];
 
       extraConfigLuaPre = ''
+        vim.g.tlaplus_mappings_enable = true
+
         require("flatten").setup()
 
         local symbols = { Error = "󰅙", Info = "󰋼", Hint = "󰌵", Warn = "" }
@@ -310,20 +373,105 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         })
 
         require("actions-preview").setup()
+        require('lsp_lines').toggle()
+        require("lsp-endhints").enable()
+
+        vim.cmd([[
+            hi Conceal guifg=#ff0000
+        ]])
       '';
 
       # Use experimental lua loader with jit cache
       luaLoader.enable = true;
       performance.combinePlugins.enable = true;
 
-      extraPlugins = with pkgs.vimPlugins; [
-        flatten-nvim
-        nvim-scrollbar
-        actions-preview-nvim
-        vimsence
-      ];
+      extraPlugins =
+        with pkgs.vimPlugins;
+        [
+          flatten-nvim
+          nvim-scrollbar
+          actions-preview-nvim
+          vimsence
+          nvim-treesitter-parsers.tlaplus
+        ]
+        ++ [
+          # https://github.com/karoliskoncevicius/distilled-vim
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "distilled-vim";
+            src = pkgs.fetchFromGitHub {
+              owner = "karoliskoncevicius";
+              repo = "distilled-vim";
+              rev = "a3d366af10b3ac477af2c9225c57ec630b416381";
+              hash = "sha256-TzzKYSRUfalysp+yXbWw8JZ/A5ErcwVqCAaCsGhlXaA=";
+            };
+          })
+
+          # https://github.com/andreasvc/vim-256noir
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "256noir";
+            src = pkgs.fetchFromGitHub {
+              owner = "andreasvc";
+              repo = "vim-256noir";
+              rev = "e8668a18a4a90272c1cae87e655f8bddc5ac3665";
+              hash = "sha256-HeS5nSnPk95YBaBEGIcEf6dfqQ3NvHHW0+u14tIZ9s4=";
+            };
+          })
+
+          # https://github.com/chrisgrieser/nvim-lsp-endhints?tab=readme-ov-file
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "lsp-endhints";
+            src = pkgs.fetchFromGitHub {
+              owner = "chrisgrieser";
+              repo = "nvim-lsp-endhints";
+              rev = "391ef40521b631a8a2fb7aef78db6967ead6b39d";
+              hash = "sha256-dCySjZoCxcCkt8D1UVJF9wQheU8vgmDxkI0JeGURpnQ=";
+            };
+          })
+
+          # https://github.com/tlaplus-community/tlaplus-nvim-plugin
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "tlaplus-nvim-plugin";
+            src = pkgs.fetchFromGitHub {
+              owner = "tlaplus-community";
+              repo = "tlaplus-nvim-plugin";
+              rev = "d066ba20ca95bde50ef55fa10f666a008fc71b09";
+              hash = "sha256-6/JZTcQGtP/sfg2ySl+wfqfoOaEk4++KPD74kwPVX98=";
+            };
+          })
+
+          # https://github.com/florentc/vim-tla
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "vim-tla";
+            src = pkgs.fetchFromGitHub {
+              owner = "florentc";
+              repo = "vim-tla";
+              rev = "220145ef791ac8d64d2c319eb2940b59da17d6ca";
+              hash = "sha256-YdXBzxB5yfpPJJ1wVRdl6i1rPDzgwrxB1Onlkixk4/c=";
+            };
+          })
+
+        ];
 
       plugins = {
+        flash = {
+          enable = true;
+          settings = {
+            continue = false;
+            modes.search.enabled = true;
+            jump = {
+              autojump = false;
+              history = false;
+              jumplist = true;
+              nohlsearch = true;
+            };
+            label = {
+              after = true;
+              min_pattern_length = 0;
+              rainbow.enabled = false;
+            };
+          };
+        };
+
         wakatime = {
           enable = true;
         };
@@ -654,7 +802,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       };
       match.ExtraWhitespace = "\\s\\+$";
 
-      colorscheme = "darkblue";
+      colorscheme = "256_noir";
 
       colorschemes.catppuccin = {
         # enable = true;

@@ -86,6 +86,7 @@ in
           "SHIFT, Print, exec, hyprshot --clipboard-only -zm region"
           "${mod}, J, togglesplit"
           "${mod}, D, exec, ags -t applauncher"
+          "${mod}, C, exec, [floating] litemdview ~/cheat.md"
           "${mod} SHIFT, Q, killactive"
           "${mod} SHIFT, E, exit"
           "${mod} SHIFT, Space, togglefloating"

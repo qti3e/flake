@@ -49,6 +49,40 @@
       "1.1.1.1"
       "9.9.9.9"
     ];
+    hosts = {
+      "127.0.0.1" = [
+        "example.com"
+
+        # To test owned domains on fleek gw.
+        "site1.example.com"
+        "site2.example.com"
+        "site3.example.com"
+        "site4.example.com"
+        "site5.example.com"
+        # To test wild card subdomain on fleek gw.
+        "site1.fleek.example.com"
+        "site2.fleek.example.com"
+        "site3.fleek.example.com"
+        "site4.fleek.example.com"
+        "site5.fleek.example.com"
+
+        # Using .test TLD
+
+        # To test owned domains on fleek gw.
+        "site1.test"
+        "site2.test"
+        "site3.test"
+        "site4.test"
+        "site5.test"
+        # To test owned domains on fleek gw.
+        "site1.fleek.test"
+        "site2.fleek.test"
+        "site3.fleek.test"
+        "site4.fleek.test"
+        "site5.fleek.test"
+      ];
+    };
+
   };
 
   time.timeZone = "America/New_York";
@@ -82,6 +116,11 @@
       "udev.log_level=0"
     ];
   };
+
+  # QMK keyboard
+  hardware.keyboard.qmk.enable = true;
+  services.udev.packages = [ pkgs.via ];
+  environment.systemPackages = with pkgs; [ via ];
 
   # CPU and GPU stuff
   hardware.cpu.intel.updateMicrocode = true;
@@ -154,6 +193,7 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    jack.enable = true;
   };
   hardware.enableAllFirmware = true;
 
