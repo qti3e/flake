@@ -6,6 +6,7 @@
     curl
     tree
     onefetch
+    # pure-prompt
   ];
 
   programs.nix-index = {
@@ -18,17 +19,17 @@
     # inline history
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    enableCompletion = false; # autocomplete will compinit on its own
+    enableCompletion = false;
     plugins = [
-      {
-        name = "zsh-autocomplete";
-        src = pkgs.fetchFromGitHub {
-          owner = "marlonrichert";
-          repo = "zsh-autocomplete";
-          rev = "23.07.13";
-          sha256 = "0NW0TI//qFpUA2Hdx6NaYdQIIUpRSd0Y4NhwBbdssCs=";
-        };
-      }
+      # {
+      #   name = "zsh-autocomplete";
+      #   src = pkgs.fetchFromGitHub {
+      #     owner = "marlonrichert";
+      #     repo = "zsh-autocomplete";
+      #     rev = "24.09.04";
+      #     sha256 = "sha256-o8IQszQ4/PLX1FlUvJpowR2Tev59N8lI20VymZ+Hp4w=";
+      #   };
+      # }
     ];
 
     shellAliases = with { ls_args = "--git --icons --group-directories-first"; }; {
@@ -107,6 +108,9 @@
       bindkey '^H' backward-kill-word                                 # delete previous word with ctrl+backspace
       bindkey '^[[Z' undo                                             # Shift+tab undo last action
       WORDCHARS="*?[]~=&;!#$%^(){}<>"                                 # Let's break up words more
+
+      # autoload -U promptinit; promptinit
+      # prompt pure
 
       function nixpkgs() {
         NIXPKGS_ALLOW_UNFREE=1 nix shell "''${@/#/nixpkgs#}"
