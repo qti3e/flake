@@ -669,7 +669,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
         bufferline = {
           enable = true;
-          settings = {
+          settings.options = {
             separatorStyle = "thin";
             offsets = [
               {
