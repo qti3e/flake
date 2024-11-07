@@ -6,7 +6,9 @@
 
       deno
       gnumake
+
       litemdview
+      graph-easy
 
       inotify-tools
       nix-tree
