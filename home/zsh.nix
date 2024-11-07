@@ -21,15 +21,15 @@
     syntaxHighlighting.enable = true;
     enableCompletion = false;
     plugins = [
-      # {
-      #   name = "zsh-autocomplete";
-      #   src = pkgs.fetchFromGitHub {
-      #     owner = "marlonrichert";
-      #     repo = "zsh-autocomplete";
-      #     rev = "24.09.04";
-      #     sha256 = "sha256-o8IQszQ4/PLX1FlUvJpowR2Tev59N8lI20VymZ+Hp4w=";
-      #   };
-      # }
+      {
+        name = "zsh-autocomplete";
+        src = pkgs.fetchFromGitHub {
+          owner = "marlonrichert";
+          repo = "zsh-autocomplete";
+          rev = "24.09.04";
+          sha256 = "sha256-o8IQszQ4/PLX1FlUvJpowR2Tev59N8lI20VymZ+Hp4w=";
+        };
+      }
     ];
 
     shellAliases = with { ls_args = "--git --icons --group-directories-first"; }; {
