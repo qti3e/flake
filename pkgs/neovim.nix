@@ -491,6 +491,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             lua_ls.enable = true;
             ts_ls.enable = true;
             clangd.enable = true;
+            zls.enable = true;
           };
         };
 
@@ -808,10 +809,10 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       };
       match.ExtraWhitespace = "\\s\\+$";
 
-      colorscheme = "256_noir";
+      # colorscheme = "256_noir";
 
       colorschemes.catppuccin = {
-        # enable = true;
+        enable = true;
         settings = {
           transparent_background = true;
           color_overrides.all = {
