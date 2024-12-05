@@ -37,9 +37,24 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "docker"
     ];
     shell = pkgs.zsh;
     packages = with pkgs; [ firefox ];
+  };
+
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+    daemon.settings = {
+      data-root = "/var/lib/docker";
+      ipv6 = true;
+      fixed-cidr-v6 = "fd00::/80";
+
+    };
   };
 
   networking = {
