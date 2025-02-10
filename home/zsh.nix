@@ -140,7 +140,7 @@
       add-zsh-hook -Uz chpwd chpwd-osc7-pwd
     '';
     initExtra = ''
-      fortune -s
+      # fortune -s
     '';
   };
 }

@@ -2,6 +2,7 @@
 {
   programs.git = {
     enable = true;
+    lfs.enable = true;
 
     userName = "qti3e";
     userEmail = "i@parsa.ooo";

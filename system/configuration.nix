@@ -45,10 +45,6 @@
 
   virtualisation.docker = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
     daemon.settings = {
       data-root = "/var/lib/docker";
       ipv6 = true;
@@ -72,33 +68,19 @@
       "127.0.0.1" = [
         "example.com"
 
-        # To test owned domains on fleek gw.
+        # To test subdomains.
         "site1.example.com"
         "site2.example.com"
         "site3.example.com"
         "site4.example.com"
         "site5.example.com"
-        # To test wild card subdomain on fleek gw.
-        "site1.fleek.example.com"
-        "site2.fleek.example.com"
-        "site3.fleek.example.com"
-        "site4.fleek.example.com"
-        "site5.fleek.example.com"
 
         # Using .test TLD
-
-        # To test owned domains on fleek gw.
         "site1.test"
         "site2.test"
         "site3.test"
         "site4.test"
         "site5.test"
-        # To test owned domains on fleek gw.
-        "site1.fleek.test"
-        "site2.fleek.test"
-        "site3.fleek.test"
-        "site4.fleek.test"
-        "site5.fleek.test"
       ];
     };
 

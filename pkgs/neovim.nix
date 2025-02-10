@@ -489,9 +489,11 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               settings.formatting.command = [ "${pkgs.nixfmt-rfc-style}/bin/nixfmt" ];
             };
             lua_ls.enable = true;
-            ts_ls.enable = true;
+            # ts_ls.enable = true;
+            denols.enable = true;
             clangd.enable = true;
             zls.enable = true;
+            gopls.enable = true;
           };
         };
 
@@ -645,7 +647,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           renderer.addTrailing = true;
           renderer.highlightOpenedFiles = "all";
           updateFocusedFile = {
-            enable = true;
+            enable = false;
             updateRoot = true;
           };
           diagnostics = {

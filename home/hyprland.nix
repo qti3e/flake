@@ -48,6 +48,9 @@ in
         "col.active_border" = "$text";
         "col.inactive_border" = "$base";
       };
+      cursor = {
+        inactive_timeout = 3;
+      };
       dwindle = {
         pseudotile = true;
         preserve_split = true;
