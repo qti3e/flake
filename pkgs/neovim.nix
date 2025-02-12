@@ -710,7 +710,12 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
                 }
               ];
               lualine_b = [ "branch" ];
-              lualine_c = [ "filename" ];
+              lualine_c = [
+                {
+                  name = "filename";
+                  path = 1;
+                }
+              ];
               lualine_x = [ "progress" ];
               lualine_y = [ "filetype" ];
               lualine_z = [
