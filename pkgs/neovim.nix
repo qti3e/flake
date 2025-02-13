@@ -20,6 +20,8 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         foldenable = false;
       };
 
+      globals.mapleader = ",";
+
       keymaps = [
         {
           key = "<leader>tp";
@@ -159,14 +161,14 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           key = "t";
           action = "<cmd>NvimTreeToggle<CR>";
           mode = [ "n" ];
-          options.desc = "Toggle File Tree";
+          options.desc = "Toggle file tree";
         }
         {
           # Toggle trouble window with all current lsp errors
           key = "T";
           action = "<cmd>Trouble diagnostics toggle<CR>";
           mode = [ "n" ];
-          options.desc = "Toggle Diagnostics";
+          options.desc = "Toggle diagnostics";
         }
         {
           # Show hover actions
@@ -211,20 +213,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "Show References";
         }
         {
-          # Rename
-          key = "gR";
-          action.__raw = "vim.lsp.buf.rename";
-          mode = [ "n" ];
-          options.desc = "Lsp Symbol Rename";
-        }
-        {
-          # Format
-          key = "gf";
-          action.__raw = "vim.lsp.buf.format";
-          mode = [ "n" ];
-          options.desc = "Lsp Format Buffer";
-        }
-        {
           # Next diagnostic
           key = "gn";
           action.__raw = "vim.diagnostic.goto_next";
@@ -237,6 +225,32 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           action.__raw = "vim.diagnostic.goto_prev";
           mode = [ "n" ];
           options.desc = "Prev diagnostic";
+        }
+        {
+          # Rename
+          key = "<leader>r";
+          action.__raw = "vim.lsp.buf.rename";
+          mode = [ "n" ];
+          options.desc = "Lsp Symbol Rename";
+        }
+        {
+          # Format
+          key = "<leader>f";
+          action.__raw = "vim.lsp.buf.format";
+          mode = [ "n" ];
+          options.desc = "Lsp Format Buffer";
+        }
+        {
+          key = "gt";
+          action = "<Esc>:Telescope grep_string<CR>";
+          mode = [ "v" ];
+          options.desc = "Telescope grep current selection";
+        }
+        {
+          key = "gt";
+          action = "<Esc>:Telescope live_grep<CR>";
+          mode = [ "n" ];
+          options.desc = "Telescope live grep";
         }
         {
           # Show buffers
@@ -379,6 +393,43 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         vim.cmd([[
             hi Conceal guifg=#ff0000
         ]])
+
+        local function virtual_text_document(params)
+          local bufnr = params.buf
+          local actual_path = params.match:sub(1)
+
+          local clients = vim.lsp.get_clients({ name = "denols" })
+          if #clients == 0 then
+            return
+          end
+
+          local client = clients[1]
+          local method = "deno/virtualTextDocument"
+          local req_params = { textDocument = { uri = actual_path } }
+          local response = client.request_sync(method, req_params, 2000, 0)
+          if not response or type(response.result) ~= "string" then
+            return
+          end
+
+          local lines = vim.split(response.result, "\n")
+          vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+          vim.api.nvim_set_option_value("readonly", true, { buf = bufnr })
+          vim.api.nvim_set_option_value("modified", false, { buf = bufnr })
+          vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+          vim.api.nvim_buf_set_name(bufnr, actual_path)
+          vim.lsp.buf_attach_client(bufnr, client.id)
+
+          local filetype = "typescript"
+          if actual_path:sub(-3) == ".md" then
+            filetype = "markdown"
+          end
+          vim.api.nvim_set_option_value("filetype", filetype, { buf = bufnr })
+        end
+
+        vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
+          pattern = { "deno:/*" },
+          callback = virtual_text_document,
+        })
       '';
 
       # Use experimental lua loader with jit cache
@@ -489,7 +540,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               settings.formatting.command = [ "${pkgs.nixfmt-rfc-style}/bin/nixfmt" ];
             };
             lua_ls.enable = true;
-            # ts_ls.enable = true;
             denols.enable = true;
             clangd.enable = true;
             zls.enable = true;
@@ -867,36 +917,3 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
     };
   };
 }
-
-# `7MM"""Mq.                                      db   mm                 db   mm         db
-#   MM   `MM.                                          MM                      MM
-#   MM   ,M9  .gP"Ya `7M'    ,A    `MF'`7Mb,od8 `7MM mmMMmm .gP"Ya      `7MM mmMMmm     `7MM  `7MMpMMMb.
-#   MMmmdM9  ,M'   Yb  VA   ,VAA   ,V    MM' "'   MM   MM  ,M'   Yb       MM   MM         MM    MM    MM
-#   MM  YM.  8M""""""   VA ,V  VA ,V     MM       MM   MM  8M""""""       MM   MM         MM    MM    MM
-#   MM   `Mb.YM.    ,    VVV    VVV      MM       MM   MM  YM.    ,       MM   MM         MM    MM    MM
-# .JMML. .JMM.`Mbmmd'     W      W     .JMML.   .JMML. `Mbmo`Mbmmd'     .JMML. `Mbmo    .JMML..JMML  JMML.
-
-#         `7MM"""Mq.                       mm
-#           MM   `MM.                      MM
-#           MM   ,M9 `7MM  `7MM  ,pP"Ybd mmMMmm
-#           MMmmdM9    MM    MM  8I   `"   MM
-#           MM  YM.    MM    MM  `YMMMa.   MM
-#           MM   `Mb.  MM    MM  L.   I8   MM
-#         .JMML. .JMM. `Mbod"YML.M9mmmP'   `Mbmo
-
-#                   `7MMM.     ,MMF'
-#                     MMMb    dPMM
-#                     M YM   ,M MM  ,pW"Wq.`7Mb,od8 .gP"Ya
-#                     M  Mb  M' MM 6W'   `Wb MM' "',M'   Yb
-#                     M  YM.P'  MM 8M     M8 MM    8M""""""
-#                     M  `YM'   MM YA.   ,A9 MM    YM.    ,
-#                   .JML. `'  .JMML.`Ybmd9'.JMML.   `Mbmmd'
-
-#                               ,,
-#     .g8"""bgd               `7MM
-#   .dP'     `M                 MM
-#   dM'       ` ,pW"Wq.    ,M""bMM  .gP"Ya
-#   MM         6W'   `Wb ,AP    MM ,M'   Yb
-#   MM.        8M     M8 8MI    MM 8M""""""
-#   `Mb.     ,'YA.   ,A9 `Mb    MM YM.    ,
-#     `"bmmmd'  `Ybmd9'   `Wbmd"MML.`Mbmmd'
