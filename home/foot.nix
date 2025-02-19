@@ -5,7 +5,7 @@
     enable = true;
     settings = {
       main = {
-        font = "Berkeley Mono:size=11, Symbols Nerd Font";
+        font = "Berkeley Mono:size=9, Symbols Nerd Font";
         dpi-aware = "yes";
         pad = "14x14 center";
         term = "xterm-256color";
