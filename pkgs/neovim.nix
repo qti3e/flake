@@ -157,14 +157,18 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
 
         {
-          # Toggle nvim tree
           key = "t";
           action = "<cmd>NvimTreeToggle<CR>";
           mode = [ "n" ];
           options.desc = "Toggle file tree";
         }
         {
-          # Toggle trouble window with all current lsp errors
+          key = ",?";
+          action = "<cmd>NvimTreeFindFile<CR>";
+          mode = [ "n" ];
+          options.desc = "Open file tree on the current file";
+        }
+        {
           key = "T";
           action = "<cmd>Trouble diagnostics toggle<CR>";
           mode = [ "n" ];
@@ -430,6 +434,21 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           pattern = { "deno:/*" },
           callback = virtual_text_document,
         })
+
+        local function use_deno_tabsz(params)
+          local bufnr = params.buf
+          vim.g.rust_recommended_style = 0
+          vim.api.nvim_set_option_value("expandtab", true, { buf = bufnr })
+          vim.api.nvim_set_option_value("tabstop", 2, { buf = bufnr })
+          vim.api.nvim_set_option_value("shiftwidth", 2, { buf = bufnr })
+          vim.api.nvim_set_option_value("softtabstop", 2, { buf = bufnr })
+          vim.api.nvim_set_option_value("textwidth", 80, { buf = bufnr })
+        end
+
+        vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+          pattern = { "/home/qti3e/Code/Deno/*" },
+          callback = use_deno_tabsz,
+        });
       '';
 
       # Use experimental lua loader with jit cache
