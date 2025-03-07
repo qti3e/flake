@@ -46,10 +46,9 @@
   virtualisation.docker = {
     enable = true;
     daemon.settings = {
-      data-root = "/var/lib/docker";
+      data-root = "/var/lib/docker2";
       ipv6 = true;
       fixed-cidr-v6 = "fd00::/80";
-
     };
   };
 
