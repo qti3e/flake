@@ -21,7 +21,7 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     enableVteIntegration = true;
-    enableCompletion = false;
+    enableCompletion = true;
     plugins = [
       {
         name = "zsh-autocomplete";
@@ -79,8 +79,6 @@
       zstyle ':completion:*' rehash true                              # automatically find new executables in path
       zstyle ':completion::complete:*' gain-privileges 1
       zstyle -e ':autocomplete:*:*' list-lines 'reply=( $(( LINES / 3 )) )'
-      bindkey              '^I' menu-select
-      bindkey "$terminfo[kcbt]" menu-select
       ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'  										  # make autosuggest a little brighter
 
       ## Keybindings section

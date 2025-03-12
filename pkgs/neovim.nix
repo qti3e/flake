@@ -17,7 +17,14 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         mouse = "";
         number = true;
         undofile = true;
-        foldenable = false;
+
+        foldenable = true;
+        foldlevel = 99;
+        foldlevelstart = 99;
+        foldtext = "";
+        foldcolumn = "0";
+        foldmethod = "expr";
+        foldexpr = "v:lua.vim.treesitter.foldexpr()";
       };
 
       globals.mapleader = ",";
@@ -342,6 +349,18 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           ];
           options.expr = true;
         }
+        {
+          key = "[c";
+          action.__raw = ''
+            function()
+              require("treesitter-context").go_to_context(vim.v.count1)
+            end
+          '';
+          mode = [
+            "n"
+          ];
+          options.desc = "Jump to upward context";
+        }
       ];
 
       autoCmd = [
@@ -369,6 +388,8 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
       extraConfigLua = ''
         vim.wo.relativenumber = true
+
+        require('crates').setup()
 
         require("scrollbar").setup({
           handlers = {
@@ -465,6 +486,16 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           nvim-treesitter-parsers.tlaplus
         ]
         ++ [
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "crates.nvim";
+            src = pkgs.fetchFromGitHub {
+              owner = "saecki";
+              repo = "crates.nvim";
+              rev = "6bf1b4ceb62f205c903590ccc62061aafc17024a";
+              hash = "sha256-ijuz7abSLNTjgeIThtV+MV6SMBWgcAWcPK7yYpB9HeI=";
+            };
+          })
+
           # https://github.com/karoliskoncevicius/distilled-vim
           (pkgs.vimUtils.buildVimPlugin {
             name = "distilled-vim";
@@ -523,6 +554,20 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         ];
 
       plugins = {
+        treesitter-context = {
+          enable = true;
+          settings = {
+            separator = "⸻";
+            max_lines = 10;
+            trim_scope = "inner";
+            min_window_height = 40;
+          };
+        };
+
+        gitlinker = {
+          enable = true;
+        };
+
         flash = {
           enable = true;
           settings = {
@@ -628,7 +673,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         cmp-path.enable = true;
         cmp-buffer.enable = true;
         cmp-git.enable = true;
-        crates-nvim.enable = true;
         cmp = {
           enable = true;
           autoEnableSources = false;

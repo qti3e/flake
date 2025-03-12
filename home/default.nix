@@ -24,6 +24,13 @@
     ./zed # zed editor
   ];
 
+  carburetor = {
+    config = {
+      variant = "cool";
+      accent = "pink";
+    };
+  };
+
   home = {
     inherit username homeDirectory;
     stateVersion = "24.05";
