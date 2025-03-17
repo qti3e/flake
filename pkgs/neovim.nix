@@ -17,6 +17,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         mouse = "";
         number = true;
         undofile = true;
+        relativenumber = true;
 
         foldenable = true;
         foldlevel = 99;
@@ -73,7 +74,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "BufferLine Move Next";
         }
 
-        # Go to previous/next
         {
           key = "<C-b>h";
           action = "<cmd>BufferLineCyclePrev<CR>";
@@ -87,7 +87,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "BufferLine Cycle Next";
         }
 
-        # Go to buffer by position
         {
           key = "<C-b>1";
           action = "<cmd>BufferLineGoToBuffer 1<CR>";
@@ -143,7 +142,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "BufferLine Goto 9";
         }
 
-        # To close buffers:
         {
           key = "<C-b>qa";
           action = "<cmd>BufferLineCloseOthers<CR>";
@@ -182,70 +180,55 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "Toggle diagnostics";
         }
         {
-          # Show hover actions
           key = "K";
           action.__raw = "vim.lsp.buf.hover";
           mode = [ "n" ];
           options.desc = "Show hover actions";
         }
+
         {
-          # Toggle git diff overlay
-          key = "go";
-          action.__raw = "MiniDiff.toggle_overlay";
-          mode = [ "n" ];
-          options.desc = "Toggle git diff overlay";
-        }
-        {
-          # Jump definition
           key = "gd";
           action.__raw = "vim.lsp.buf.definition";
           mode = [ "n" ];
           options.desc = "Jump definition";
         }
         {
-          # Jump declaration
           key = "gD";
           action.__raw = "vim.lsp.buf.declaration";
           mode = [ "n" ];
           options.desc = "Jump declaration";
         }
         {
-          # Jump implementation
           key = "gi";
           action.__raw = "vim.lsp.buf.implementation";
           mode = [ "n" ];
           options.desc = "Jump implementation";
         }
         {
-          # References
           key = "gr";
           action.__raw = "vim.lsp.buf.references";
           mode = [ "n" ];
           options.desc = "Show References";
         }
         {
-          # Next diagnostic
           key = "gn";
           action.__raw = "vim.diagnostic.goto_next";
           mode = [ "n" ];
           options.desc = "Next diagnostic";
         }
         {
-          # Previous diagnostic
           key = "gN";
           action.__raw = "vim.diagnostic.goto_prev";
           mode = [ "n" ];
           options.desc = "Prev diagnostic";
         }
         {
-          # Rename
           key = "<leader>r";
           action.__raw = "vim.lsp.buf.rename";
           mode = [ "n" ];
           options.desc = "Lsp Symbol Rename";
         }
         {
-          # Format
           key = "<leader>f";
           action.__raw = "vim.lsp.buf.format";
           mode = [ "n" ];
@@ -264,35 +247,30 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "Telescope live grep";
         }
         {
-          # Show buffers
           key = "gb";
           action = "<Esc>:Telescope buffers<CR>";
           mode = [ "n" ];
           options.desc = "Show buffers";
         }
         {
-          # Show files
           key = "gf";
           action = "<Esc>:Telescope find_files<CR>";
           mode = [ "n" ];
           options.desc = "Show files";
         }
         {
-          # Show symbols
           key = "gs";
           action = "<Esc>:Telescope lsp_dynamic_workspace_symbols<CR>";
           mode = [ "n" ];
           options.desc = "Show workplace symbols";
         }
         {
-          # Show document symbols
           key = "gS";
           action = "<Esc>:Telescope lsp_document_symbols<CR>";
           mode = [ "n" ];
           options.desc = "Show document symbols";
         }
         {
-          # Show code actions
           key = "<C-.>";
           action.__raw = ''require("actions-preview").code_actions'';
           mode = [
@@ -301,17 +279,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             "i"
           ];
           options.desc = "Show code actions";
-        }
-        {
-          # Ctrl-S save and escape
-          key = "<C-s>";
-          action = "<Esc>:w!<CR>";
-          mode = [
-            "n"
-            "v"
-            "i"
-          ];
-          options.desc = "Save";
         }
         {
           # Jump forward if completing a snippet (ie, function parameter placeholders)
@@ -387,9 +354,18 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       '';
 
       extraConfigLua = ''
-        vim.wo.relativenumber = true
-
-        require('crates').setup()
+        require('crates').setup({
+          completion = {
+            crates = {
+              enabled = true,
+              max_results = 8,
+              min_chars = 3
+            },
+            cmp = {
+              enabled = true,
+            },
+          }
+        })
 
         require("scrollbar").setup({
           handlers = {
@@ -475,6 +451,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       # Use experimental lua loader with jit cache
       luaLoader.enable = true;
       performance.combinePlugins.enable = true;
+      match.ExtraWhitespace = "\\s\\+$";
 
       extraPlugins =
         with pkgs.vimPlugins;
@@ -482,7 +459,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           flatten-nvim
           nvim-scrollbar
           actions-preview-nvim
-          vimsence
           nvim-treesitter-parsers.tlaplus
         ]
         ++ [
@@ -493,17 +469,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               repo = "crates.nvim";
               rev = "6bf1b4ceb62f205c903590ccc62061aafc17024a";
               hash = "sha256-ijuz7abSLNTjgeIThtV+MV6SMBWgcAWcPK7yYpB9HeI=";
-            };
-          })
-
-          # https://github.com/karoliskoncevicius/distilled-vim
-          (pkgs.vimUtils.buildVimPlugin {
-            name = "distilled-vim";
-            src = pkgs.fetchFromGitHub {
-              owner = "karoliskoncevicius";
-              repo = "distilled-vim";
-              rev = "a3d366af10b3ac477af2c9225c57ec630b416381";
-              hash = "sha256-TzzKYSRUfalysp+yXbWw8JZ/A5ErcwVqCAaCsGhlXaA=";
             };
           })
 
@@ -554,6 +519,26 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         ];
 
       plugins = {
+        wakatime.enable = true;
+        neoscroll.enable = true;
+        gitlinker.enable = true;
+        web-devicons.enable = true;
+        lsp-format.enable = true;
+        treesitter.enable = true;
+        lsp-lines.enable = true;
+        nvim-autopairs.enable = true;
+        commentary.enable = true;
+
+        telescope = {
+          enable = true;
+          extensions.file-browser = {
+            enable = true;
+            settings = {
+              hijack_netrw = true;
+            };
+          };
+        };
+
         treesitter-context = {
           enable = true;
           settings = {
@@ -562,10 +547,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             trim_scope = "inner";
             min_window_height = 40;
           };
-        };
-
-        gitlinker = {
-          enable = true;
         };
 
         flash = {
@@ -587,14 +568,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           };
         };
 
-        wakatime = {
-          enable = true;
-        };
-
-        neoscroll = {
-          enable = true;
-        };
-
         lsp = {
           enable = true;
           inlayHints = true;
@@ -610,8 +583,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             gopls.enable = true;
           };
         };
-
-        web-devicons.enable = true;
 
         rustaceanvim = {
           enable = true;
@@ -650,13 +621,11 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           };
         };
 
-        lsp-format.enable = true;
-        treesitter.enable = true;
         trouble = {
           enable = true;
           settings.auto_close = true;
         };
-        lsp-lines.enable = true;
+
         gitsigns = {
           enable = true;
           settings = {
@@ -665,9 +634,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             current_line_blame_opts.delay = 0;
           };
         };
-        nvim-colorizer.enable = true;
-        nvim-autopairs.enable = true;
-        commentary.enable = true;
 
         cmp-nvim-lsp.enable = true;
         cmp-path.enable = true;
@@ -752,8 +718,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             '';
           };
         };
-
-        telescope.enable = true;
 
         nvim-tree = {
           enable = true;
@@ -846,136 +810,10 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             };
           };
         };
-
-        mini = {
-          enable = true;
-          modules = {
-            diff = { };
-            starter = {
-              evaluate_single = true;
-              header.__raw = ''
-                function()
-                  local hour = tonumber(vim.fn.strftime('%H'))
-                  local part_id = math.floor((hour + 4) / 8) + 1
-                  local day_part = ({ 'evening', 'morning', 'afternoon', 'evening' })[part_id]
-                  local username = vim.loop.os_get_passwd()['username'] or 'USERNAME'
-                  return ([[
-                       ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄
-                      ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
-                      ▐░█▀▀▀▀▀▀▀█░▌▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀
-                      ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌               ▐░▌
-                      ▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄      ▐░▌
-                      ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌     ▐░▌
-                      ▐░█▀▀▀▀█░█▀▀ ▐░▌       ▐░▌ ▀▀▀▀▀▀▀▀▀█░▌     ▐░▌
-                      ▐░▌     ▐░▌  ▐░▌       ▐░▌          ▐░▌     ▐░▌
-                      ▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄█░▌ ▄▄▄▄▄▄▄▄▄█░▌     ▐░▌
-                      ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌     ▐░▌
-                       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀       ▀
-
-                                           ▄▄       ▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄
-                                          ▐░░▌     ▐░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
-                                          ▐░▌░▌   ▐░▐░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀
-                                          ▐░▌▐░▌ ▐░▌▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌
-                                          ▐░▌ ▐░▐░▌ ▐░▌▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄
-                                          ▐░▌  ▐░▌  ▐░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
-                                          ▐░▌   ▀   ▐░▌▐░▌       ▐░▌▐░█▀▀▀▀█░█▀▀ ▐░█▀▀▀▀▀▀▀▀▀
-                                          ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌     ▐░▌  ▐░▌
-                                          ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄▄▄
-                                          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌
-                                           ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀
-
-
-
-
-                ~ Good %s, %s]]):format(day_part, username)
-                end
-              '';
-              items.__raw = ''
-                {
-                  require("mini.starter").sections.recent_files(9, true),
-                  { name = 'New',  action = 'enew',           section = 'Editor actions' },
-                  { name = 'Tree', action = 'NvimTreeToggle', section = 'Editor actions' },
-                  { name = 'Quit', action = 'qall',           section = 'Editor actions' },
-                }
-              '';
-
-              content_hooks.__raw = ''
-                (function()
-                  local starter = require('mini.starter')
-                  return {
-                    starter.gen_hook.adding_bullet(),
-                    starter.gen_hook.indexing("all", { "Editor actions" }),
-                    starter.gen_hook.padding(2, 1),
-                  }
-                end)()
-              '';
-            };
-          };
-        };
       };
 
-      highlight = {
-        # Highlight and remove extra white spaces
-        ExtraWhitespace.bg = "#fa4d56";
-
-        # Mini.diff color fixes
-        MiniDiffSignAdd.fg = "#42be65";
-        MiniDiffSignChange.fg = "#fddc69";
-        MiniDiffSignDelete.fg = "#fa4d56";
-        MiniDiffOverAdd.bg = "#044317";
-        MiniDiffOverChange.bg = "#8e6a00";
-        MiniDiffOverDelete.bg = "#750e13";
-        MiniDiffOverContext.bg = "#262626";
-      };
-      match.ExtraWhitespace = "\\s\\+$";
-
-      # colorscheme = "256_noir";
-
-      colorschemes.catppuccin = {
+      colorschemes.nightfox = {
         enable = true;
-        settings = {
-          transparent_background = true;
-          color_overrides.all = {
-            rosewater = "#ffd7d9";
-            flamingo = "#ffb3b8";
-            pink = "#ff7eb6";
-            mauve = "#d4bbff";
-            red = "#fa4d56";
-            maroon = "#ff8389";
-            peach = "#ff832b";
-            yellow = "#fddc69";
-            green = "#42be65";
-            teal = "#3ddbd9";
-            sky = "#82cfff";
-            sapphire = "#78a9ff";
-            blue = "#4589ff";
-            lavender = "#be95ff";
-            text = "#f4f4f4";
-            subtext1 = "#e0e0e0";
-            subtext0 = "#c6c6c6";
-            overlay2 = "#a8a8a8";
-            overlay1 = "#8d8d8d";
-            overlay0 = "#6f6f6f";
-            surface2 = "#525252";
-            surface1 = "#393939";
-            surface0 = "#262626";
-            base = "#161616";
-            mantle = "#0b0b0b";
-            crust = "#000000";
-          };
-          show_end_of_buffer = false;
-          integrations = {
-            NormalNvim = true;
-            mini.enabled = true;
-            nvimtree = true;
-            lsp_trouble = true;
-            symbols_outline = true;
-            treesitter = true;
-            gitsigns = true;
-            fidget = true;
-            cmp = true;
-          };
-        };
       };
     };
   };

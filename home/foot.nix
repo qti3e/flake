@@ -7,7 +7,7 @@
       main = {
         font = "Berkeley Mono:size=9, Symbols Nerd Font";
         dpi-aware = "yes";
-        pad = "14x14 center";
+        pad = "0x0 center";
         term = "xterm-256color";
       };
       colors.alpha = "0.8";
