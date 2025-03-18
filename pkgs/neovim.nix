@@ -162,19 +162,27 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
 
         {
-          key = "t";
-          action = "<cmd>NvimTreeToggle<CR>";
+          key = "<leader>t";
+          # action = "<cmd>NvimTreeToggle<CR>";
+          action = "<cmd>Telescope file_browser<CR>";
           mode = [ "n" ];
-          options.desc = "Toggle file tree";
+          options.desc = "Toggle file browser";
         }
         {
-          key = ",?";
-          action = "<cmd>NvimTreeFindFile<CR>";
+          key = "<leader>?";
+          # action = "<cmd>NvimTreeFindFile<CR>";
+          action = "<cmd>Telescope file_browser path=%:p:h select_buffer=true<CR>";
           mode = [ "n" ];
           options.desc = "Open file tree on the current file";
         }
         {
-          key = "T";
+          key = "<leader>d";
+          action = "<cmd>Trouble diagnostics toggle<CR>";
+          mode = [ "n" ];
+          options.desc = "Toggle diagnostics";
+        }
+        {
+          key = "<leader>s";
           action = "<cmd>Trouble diagnostics toggle<CR>";
           mode = [ "n" ];
           options.desc = "Toggle diagnostics";
@@ -186,6 +194,12 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "Show hover actions";
         }
 
+        {
+          key = "go";
+          action.__raw = "MiniDiff.toggle_overlay";
+          mode = [ "n" ];
+          options.desc = "Toggle git diff overlay";
+        }
         {
           key = "gd";
           action.__raw = "vim.lsp.buf.definition";
@@ -259,13 +273,13 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "Show files";
         }
         {
-          key = "gs";
+          key = "gS";
           action = "<Esc>:Telescope lsp_dynamic_workspace_symbols<CR>";
           mode = [ "n" ];
           options.desc = "Show workplace symbols";
         }
         {
-          key = "gS";
+          key = "gs";
           action = "<Esc>:Telescope lsp_document_symbols<CR>";
           mode = [ "n" ];
           options.desc = "Show document symbols";
@@ -316,18 +330,18 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           ];
           options.expr = true;
         }
-        {
-          key = "[c";
-          action.__raw = ''
-            function()
-              require("treesitter-context").go_to_context(vim.v.count1)
-            end
-          '';
-          mode = [
-            "n"
-          ];
-          options.desc = "Jump to upward context";
-        }
+        # {
+        #   key = "[c";
+        #   action.__raw = ''
+        #     function()
+        #       require("treesitter-context").go_to_context(vim.v.count1)
+        #     end
+        #   '';
+        #   mode = [
+        #     "n"
+        #   ];
+        #   options.desc = "Jump to upward context";
+        # }
       ];
 
       autoCmd = [
@@ -808,6 +822,14 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
                 }
               ];
             };
+          };
+        };
+
+        mini = {
+          enable = true;
+          modules = {
+            diff = { };
+            bracketed = { };
           };
         };
       };
