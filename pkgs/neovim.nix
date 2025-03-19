@@ -48,119 +48,25 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           mode = [ "n" ];
           options.desc = "Toggle LspLines";
         }
-        {
-          key = "<C-b>g";
-          action = "<cmd>BufferLinePick<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Pick";
-        }
-        {
-          key = "<C-b>p";
-          action = "<cmd>BufferLineTogglePin<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Toggle Pin";
-        }
 
         {
-          key = "<C-b>mh";
-          action = "<cmd>BufferLineMovePrev<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Move Prev";
+          key = "<leader>j";
+          action.__raw = "require('flash').treesitter";
+          mode = [
+            "v"
+            "n"
+          ];
+          options.desc = "Flash treesitter";
         }
         {
-          key = "<C-b>ml";
-          action = "<cmd>BufferLineMoveNext<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Move Next";
+          key = "<leader>R";
+          action.__raw = "require('flash').treesitter_search";
+          mode = [
+            "v"
+            "n"
+          ];
+          options.desc = "Flash treesitter search";
         }
-
-        {
-          key = "<C-b>h";
-          action = "<cmd>BufferLineCyclePrev<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Cycle Prev";
-        }
-        {
-          key = "<C-b>l";
-          action = "<cmd>BufferLineCycleNext<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Cycle Next";
-        }
-
-        {
-          key = "<C-b>1";
-          action = "<cmd>BufferLineGoToBuffer 1<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 1";
-        }
-        {
-          key = "<C-b>2";
-          action = "<cmd>BufferLineGoToBuffer 2<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 2";
-        }
-        {
-          key = "<C-b>3";
-          action = "<cmd>BufferLineGoToBuffer 3<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 3";
-        }
-        {
-          key = "<C-b>4";
-          action = "<cmd>BufferLineGoToBuffer 4<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 4";
-        }
-        {
-          key = "<C-b>5";
-          action = "<cmd>BufferLineGoToBuffer 5<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 5";
-        }
-        {
-          key = "<C-b>6";
-          action = "<cmd>BufferLineGoToBuffer 6<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 6";
-        }
-        {
-          key = "<C-b>7";
-          action = "<cmd>BufferLineGoToBuffer 7<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 7";
-        }
-        {
-          key = "<C-b>8";
-          action = "<cmd>BufferLineGoToBuffer 8<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 8";
-        }
-        {
-          key = "<C-b>9";
-          action = "<cmd>BufferLineGoToBuffer 9<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Goto 9";
-        }
-
-        {
-          key = "<C-b>qa";
-          action = "<cmd>BufferLineCloseOthers<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Close Others";
-        }
-        {
-          key = "<C-b>qh";
-          action = "<cmd>BufferLineCloseLeft<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Close Left";
-        }
-        {
-          key = "<C-b>ql";
-          action = "<cmd>BufferLineCloseRight<CR>";
-          mode = [ "n" ];
-          options.desc = "BufferLine Close Right";
-        }
-
         {
           key = "<leader>t";
           # action = "<cmd>NvimTreeToggle<CR>";
@@ -183,9 +89,9 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
         {
           key = "<leader>s";
-          action = "<cmd>Trouble diagnostics toggle<CR>";
+          action = "<cmd>Trouble symbols toggle<CR>";
           mode = [ "n" ];
-          options.desc = "Toggle diagnostics";
+          options.desc = "Toggle symbols";
         }
         {
           key = "K";
@@ -330,18 +236,18 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           ];
           options.expr = true;
         }
-        # {
-        #   key = "[c";
-        #   action.__raw = ''
-        #     function()
-        #       require("treesitter-context").go_to_context(vim.v.count1)
-        #     end
-        #   '';
-        #   mode = [
-        #     "n"
-        #   ];
-        #   options.desc = "Jump to upward context";
-        # }
+        {
+          key = "<leader>u";
+          action.__raw = ''
+            function()
+              require("treesitter-context").go_to_context(vim.v.count1)
+            end
+          '';
+          mode = [
+            "n"
+          ];
+          options.desc = "Jump to upward context";
+        }
       ];
 
       autoCmd = [
@@ -400,6 +306,81 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             Hint = { text = { symbols.Hint } },
           },
         })
+
+        require'nvim-treesitter.configs'.setup {
+          textobjects = {
+            select = {
+              enable = true,
+              -- Automatically jump forward to textobj, similar to targets.vim
+              lookahead = true,
+              keymaps = {
+                -- You can use the capture groups defined in textobjects.scm
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@call.outer",
+                ["ic"] = "@call.inner",
+                ["al"] = "@loop.outer",
+                ["il"] = "@loop.inner",
+                ["ab"] = "@block.outer",
+                ["ib"] = "@block.inner",
+                ["ai"] = "@conditional.outer",
+                ["ii"] = "@conditional.inner",
+                ["aa"] = "@assignment.outer",
+                ["ia"] = "@assignment.inner",
+                -- upper case
+                ["aC"] = "@comment.outer",
+                ["iC"] = "@comment.inner",
+                ["aP"] = "@parameter.outer",
+                ["iP"] = "@parameter.inner",
+                -- t for trait because Rust
+                ["at"] = "@class.outer",
+                ["it"] = "@class.inner",
+                -- no inner
+                ["aS"] = "@statement.outer",
+              }
+            },
+            swap = {
+              enable = true,
+              swap_next = {
+                ["<leader>mp"] = "@parameter.inner",
+                ["<leader>mf"] = "@function.outer",
+                ["<leader>mb"] = "@block.outer",
+                ["<leader>mc"] = "@call.outer",
+                ["<leader>ml"] = "@loop.outer",
+                ["<leader>mi"] = "@conditional.outer",
+                ["<leader>ms"] = "@statement.outer",
+              },
+              swap_previous = {
+                ["<leader>mP"] = "@parameter.inner",
+                ["<leader>mF"] = "@function.outer",
+                ["<leader>mB"] = "@block.outer",
+                ["<leader>mC"] = "@call.outer",
+                ["<leader>mL"] = "@loop.outer",
+                ["<leader>mI"] = "@conditional.outer",
+                ["<leader>mS"] = "@statement.outer",
+              },
+            },
+            move = {
+              enable = true,
+              set_jumps = true,
+              goto_next = {
+                ["]m"] = "@function.outer",
+                ["]s"] = { query = { "@loop.outer", "@conditional.outer" } },
+                ["]p"] = "@parameter.inner",
+              },
+              goto_previous = {
+                ["[m"] = "@function.outer",
+                ["[s"] = { query = { "@loop.outer", "@conditional.outer" } },
+                ["[p"] = "@parameter.inner",
+              }
+            },
+          },
+        }
+        -- Repeat movement with ; and ,
+        -- ensure ; goes forward and , goes backward regardless of the last direction
+        local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+        vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
+        vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
 
         require("actions-preview").setup()
         require('lsp_lines').toggle()
@@ -465,6 +446,9 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       # Use experimental lua loader with jit cache
       luaLoader.enable = true;
       performance.combinePlugins.enable = true;
+      performance.combinePlugins.standalonePlugins = [
+        "vimplugin-nvim-treesitter-textobjects"
+      ];
       match.ExtraWhitespace = "\\s\\+$";
 
       extraPlugins =
@@ -476,6 +460,16 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           nvim-treesitter-parsers.tlaplus
         ]
         ++ [
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "nvim-treesitter-textobjects";
+            src = pkgs.fetchFromGitHub {
+              owner = "nvim-treesitter";
+              repo = "nvim-treesitter-textobjects";
+              rev = "9937e5e356e5b227ec56d83d0a9d0a0f6bc9cad4";
+              hash = "sha256-2i2HrJLJvx2HwPua/wcJpuF3nlvNf/VzNq2PlsbfHdM=";
+            };
+          })
+
           (pkgs.vimUtils.buildVimPlugin {
             name = "crates.nvim";
             src = pkgs.fetchFromGitHub {
@@ -576,7 +570,9 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             };
             label = {
               after = true;
-              min_pattern_length = 0;
+              # exclude hard to reach keys
+              exclude = "z";
+              min_pattern_length = 2;
               rainbow.enabled = false;
             };
           };
@@ -730,48 +726,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
                 documentation = cmp.config.window.bordered(),
               }
             '';
-          };
-        };
-
-        nvim-tree = {
-          enable = true;
-          renderer.addTrailing = true;
-          renderer.highlightOpenedFiles = "all";
-          updateFocusedFile = {
-            enable = false;
-            updateRoot = true;
-          };
-          diagnostics = {
-            enable = true;
-            showOnDirs = true;
-            icons = {
-              hint = {
-                __raw = "symbols.Hint";
-              };
-              info = {
-                __raw = "symbols.Info";
-              };
-              warning = {
-                __raw = "symbols.Warn";
-              };
-              error = {
-                __raw = "symbols.Error";
-              };
-            };
-          };
-        };
-
-        bufferline = {
-          enable = true;
-          settings.options = {
-            separatorStyle = "thin";
-            offsets = [
-              {
-                filetype = "NvimTree";
-                text = "__ Tree __";
-                separator = "│";
-              }
-            ];
           };
         };
 
