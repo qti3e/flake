@@ -5,6 +5,7 @@
       neovim
 
       deno
+      curl
       gnumake
 
       litemdview

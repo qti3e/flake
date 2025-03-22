@@ -275,12 +275,7 @@
       enable = true;
       enableCompletion = false;
     };
-    # Same for sway and hyprland, install to system to ensure wayland sessions are propagated correctly.
-    sway = {
-      enable = true;
-      package = pkgs.swayfx;
-      # extraOptions = [ "--unsupported-gpu" ];
-    };
+    # Same for hyprland, install to system to ensure wayland sessions are propagated correctly.
     hyprland.enable = true;
 
     mtr.enable = true;

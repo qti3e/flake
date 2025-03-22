@@ -82,6 +82,12 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           options.desc = "Open file tree on the current file";
         }
         {
+          key = "<leader>D";
+          action = "<cmd>Telescope diagnostics<CR>";
+          mode = [ "n" ];
+          options.desc = "Telescope diagnostics";
+        }
+        {
           key = "<leader>d";
           action = "<cmd>Trouble diagnostics toggle<CR>";
           mode = [ "n" ];
@@ -108,25 +114,32 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
         {
           key = "gd";
-          action.__raw = "vim.lsp.buf.definition";
+          action = "<Esc>:Telescope lsp_definitions<CR>";
           mode = [ "n" ];
           options.desc = "Jump definition";
         }
         {
           key = "gD";
+          # no telescope support
           action.__raw = "vim.lsp.buf.declaration";
           mode = [ "n" ];
           options.desc = "Jump declaration";
         }
         {
           key = "gi";
-          action.__raw = "vim.lsp.buf.implementation";
+          action = "<Esc>:Telescope lsp_implementations<CR>";
           mode = [ "n" ];
-          options.desc = "Jump implementation";
+          options.desc = "Jump to implementations";
+        }
+        {
+          key = "gT";
+          action = "<Esc>:Telescope lsp_type_definitions<CR>";
+          mode = [ "n" ];
+          options.desc = "Jump to type definition";
         }
         {
           key = "gr";
-          action.__raw = "vim.lsp.buf.references";
+          action = "<Esc>:Telescope lsp_references<CR>";
           mode = [ "n" ];
           options.desc = "Show References";
         }
