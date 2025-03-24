@@ -39,13 +39,16 @@ in
       debug.disable_logs = false;
       exec = [
         "swww-daemon -f xbgr"
-        "ags"
+        "eww daemon"
+        "eww open bar"
       ];
       source = [ "./themes/regular.conf" ];
       # monitor = [ "Unknown-1, disable" ];
       general = {
         layout = "dwindle";
-        "col.active_border" = "$text";
+        gaps_out = 0;
+        gaps_in = 0;
+        "col.active_border" = "#131a24";
         "col.inactive_border" = "$base";
       };
       cursor = {
@@ -75,10 +78,12 @@ in
           brightness = "0.9";
           popups = true;
           xray = false;
-          new_optimizations = false;
+          new_optimizations = true;
         };
-        rounding = 10;
+        rounding = 0;
         dim_special = "0.0";
+        dim_inactive = true;
+        dim_strength = 0.3;
       };
       misc = {
         disable_hyprland_logo = true;
@@ -106,7 +111,8 @@ in
           # "${mod}, grave, hyprexpo:expo, toggle"
 
           # App launcher
-          "${mod}, D, exec, ags -t applauncher"
+          # "${mod}, D, exec, ags -t applauncher"
+
           # Terminal
           "${mod}, RETURN, exec, foot"
           # Browser

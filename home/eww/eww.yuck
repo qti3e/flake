@@ -1,0 +1,62 @@
+(defwidget bar []
+  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+    (sidestuff)))
+
+(defwidget sidestuff []
+  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end" :spacing 5
+    (metric :label "󰕾"
+            :value volume
+            :onchange "pamixer --set-volume {}")
+
+    (_battery :status {EWW_BATTERY.BAT1.status}
+          :battery {EWW_BATTERY.BAT1.capacity})
+
+    (box :class "time" time)))
+
+(defwidget _battery [battery status]
+  (box :orientation "h"
+       :space-evenly true
+    (box { status == 'Charging' ? (
+        battery < 10 ? "󱊤" :
+        battery < 20 ? "󰢜" :
+        battery < 30 ? "󰂆" :
+        battery < 40 ? "󰂇" :
+        battery < 50 ? "󰂈" :
+        battery < 60 ? "󰢝" :
+        battery < 70 ? "󰂉" :
+        battery < 80 ? "󰢞" :
+        battery < 90 ? "󰂊" :
+        battery < 99 ? "󰂋" : "󰂅"
+    ) : (
+        battery < 10 ? "󰂎" :
+        battery < 20 ? "󰁺" :
+        battery < 30 ? "󰁻" :
+        battery < 40 ? "󰁼" :
+        battery < 50 ? "󰁽" :
+        battery < 60 ? "󰁾" :
+        battery < 70 ? "󰁿" :
+        battery < 80 ? "󰂀" :
+        battery < 90 ? "󰂁" :
+        battery < 98 ? "󰂂" : "󰁹")})
+    (box "${battery}%")))
+
+(defwidget metric [label value onchange]
+  (box :orientation "h"
+       :space-evenly true
+    (box :class "label" label)
+    (box "${value}%")))
+
+(defpoll volume :interval "1s"
+  "scripts/getvol")
+
+(defpoll time :interval "1s"
+  "date '+%H:%M %a'")
+
+(defwindow bar
+  :monitor 0
+  :stacking "fg"
+  :geometry (geometry :x "0px"
+                      :y "0px"
+                      :anchor "bottom right")
+  :reserve (struts :side "bottom" :distance "0%")
+  (bar))
