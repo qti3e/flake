@@ -16,9 +16,14 @@
 
       ripgrep-all
       ripgrep
+      fd
       xq
+      jq
 
       bottom
+      sqlite
+
+      kubectl
     ];
 
     sessionVariables = {

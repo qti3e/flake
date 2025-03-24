@@ -222,6 +222,21 @@
       zle -N vimopen
       bindkey '^p' vimopen
 
+      hist() {
+        db=$(find "$HOME/.mozilla/firefox/" -wholename "*.default/places.sqlite" | head -1)
+        cp $db /tmp/firefox-places.sqlite
+        local OUT=$(fzf --reverse -m --no-preview --wrap --gap 1 --read0 < <(
+        sqlite3 /tmp/firefox-places.sqlite -cmd ".mode json" \
+          "select p.title, p.description, p.url from moz_places as p where LENGTH(p.title) > 3 and p.visit_count > 1 order by p.frecency DESC" \
+          | jq -rj '.[] | ( .title + "\n" + .description + "\n" + .url + "\u0000")') | tail -n 1)
+        if [ $? -eq 0 ] && [ -n "$OUT" ]; then
+          firefox --new-tab $OUT
+        fi
+        zle reset-prompt
+      }
+      zle -N hist
+      bindkey '^h' hist
+
       bindkey -v
     '';
   };
