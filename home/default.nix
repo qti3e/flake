@@ -10,18 +10,20 @@
     # carburetor theming
     inputs.carburetor.homeManagerModules.default
 
-    ./foot.nix # Terminal
-    ./zsh.nix
-    ./starship.nix # Prompt
+    ./foot.nix # terminal
+    ./zsh.nix # terminal shell
+    ./starship.nix # prompt
 
     # doesn't support background tasks :(
     ./nushell.nix
 
-    ./git.nix # Git
-    ./dev.nix # Dev utils
+    ./git.nix # git
+    ./dev.nix # dev utils
 
     ./hyprland.nix # window manager
     ./gtk.nix # gtk theming
+    ./eww.nix # bar
+
     ./obs.nix # OBS Studio
     ./zed # zed editor
 

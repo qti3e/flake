@@ -536,7 +536,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               hash = "sha256-YdXBzxB5yfpPJJ1wVRdl6i1rPDzgwrxB1Onlkixk4/c=";
             };
           })
-
         ];
 
       plugins = {
@@ -548,6 +547,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         treesitter.enable = true;
         lsp-lines.enable = true;
         nvim-autopairs.enable = true;
+        nvim-colorizer.enable = true;
         commentary.enable = true;
 
         telescope = {

@@ -30,21 +30,22 @@
       [](fg:color_bg3 bg:color_bg1)\
       $time\
       [ ](fg:color_bg1)\
-      $line_break$character"""
+      $line_break $character"""
 
-      palette = 'gruvbox_dark'
+      palette = 'nightfox'
 
-      [palettes.gruvbox_dark]
-      color_fg0 = '#fbf1c7'
-      color_bg1 = '#3c3836'
-      color_bg3 = '#665c54'
-      color_blue = '#458588'
-      color_aqua = '#689d6a'
-      color_green = '#98971a'
-      color_orange = '#d65d0e'
-      color_purple = '#b16286'
-      color_red = '#cc241d'
-      color_yellow = '#d79921'
+      [palettes.nightfox]
+      color_fg0 = '#cdcecf'
+      color_fg1 = '#131a24'
+      color_bg1 = '#393b44'
+      color_bg3 = '#7aa2f7'
+      color_blue = '#414868'
+      color_aqua = '#131a24'
+      color_green = '#f4a261'
+      color_orange = '#7aa2f7'
+      color_purple = '#9d79d6'
+      color_red = '#c94f6d'
+      color_yellow = '#414868'
 
       [os]
       disabled = false
@@ -75,8 +76,8 @@
 
       [username]
       show_always = true
-      style_user = "bg:color_orange fg:color_fg0"
-      style_root = "bg:color_orange fg:color_fg0"
+      style_user = "bg:color_orange fg:color_fg1"
+      style_root = "bg:color_orange fg:color_fg1"
       format = '[ $user ]($style)'
 
       [directory]
@@ -166,12 +167,12 @@
 
       [character]
       disabled = false
-      success_symbol = '[](bold fg:color_green)'
-      error_symbol = '[](bold fg:color_red)'
-      vimcmd_symbol = '[](bold fg:color_green)'
-      vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
-      vimcmd_replace_symbol = '[](bold fg:color_purple)'
-      vimcmd_visual_symbol = '[](bold fg:color_yellow)'
+      success_symbol = '[∴](bold fg:color_green)'
+      error_symbol = '[∴](bold fg:color_red)'
+      vimcmd_symbol = '[☿](bold fg:color_green)'
+      vimcmd_replace_one_symbol = '[☿](bold fg:color_purple)'
+      vimcmd_replace_symbol = '[☿](bold fg:color_purple)'
+      vimcmd_visual_symbol = '[☿](bold fg:color_yellow)'
     '';
   };
 }

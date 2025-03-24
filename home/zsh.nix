@@ -117,8 +117,8 @@
 
       PATH="$HOME/.deno/bin:$PATH"
 
-      bindkey -d
-      bindkey -v
+      # bindkey -d
+      # bindkey -v
     '';
   };
 }
