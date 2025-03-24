@@ -7,7 +7,6 @@
 {
   home.packages = with pkgs; [
     pamixer
-    iosevka # iosevka-nerd-font
   ];
 
   programs.eww = {

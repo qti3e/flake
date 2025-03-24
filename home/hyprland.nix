@@ -11,6 +11,7 @@ in
 
     hyprlock
     hyprshot
+    hyprpicker
   ];
 
   carburetor.themes = {
@@ -38,12 +39,18 @@ in
       };
       debug.disable_logs = false;
       exec = [
+        # This will make sure that xdg-desktop-portal-hyprland can get the required variables on startup.
+        "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
         "swww-daemon -f xbgr"
         "eww daemon"
         "eww open bar"
       ];
       source = [ "./themes/regular.conf" ];
-      # monitor = [ "Unknown-1, disable" ];
+      monitor = [
+        # https://wiki.hyprland.org/Configuring/Monitors/
+        # ",1920x1200@165.00Hz, 0x0, 1"
+      ];
       general = {
         layout = "dwindle";
         gaps_out = 0;

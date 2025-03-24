@@ -6,6 +6,7 @@
     curl
     tree
     onefetch
+    fd
     (fortune.override { withOffensive = true; })
   ];
 
@@ -52,11 +53,53 @@
       switch = "sudo nixos-rebuild switch";
     };
 
+    sessionVariables = {
+      # Let's break up words more
+      WORDCHARS = "*?[]~=&;!#$%^(){}<>";
+      PATH = "$HOME/.deno/bin:$PATH";
+    };
+
+    plugins = [
+      {
+        name = "zsh-window-title";
+        src = pkgs.fetchFromGitHub {
+          owner = "olets";
+          repo = "zsh-window-title";
+          rev = "v1.2.0";
+          sha256 = "RqJmb+XYK35o+FjUyqGZHD6r1Ku1lmckX41aXtVIUJQ=";
+        };
+      }
+      {
+        name = "forgit";
+        src = pkgs.fetchFromGitHub {
+          owner = "wfxr";
+          repo = "forgit";
+          rev = "25.02.0";
+          sha256 = "sha256-vVsJe/MycQrwHLJOlBFLCuKuVDwQfQSMp56Y7beEUyg=";
+        };
+      }
+    ];
+
     initExtraFirst = ''
       fpath=("$HOME/.zsh/completions" $fpath)
 
+      # Use ? as the trigger sequence instead of the default **
+      export FZF_COMPLETION_TRIGGER='?'
+
       # Options to fzf command
-      export FZF_COMPLETION_OPTS='--border --info=inline'
+      export FZF_COMPLETION_OPTS="
+        --walker-skip .git,node_modules,target,.direnv
+        --border
+        --info=inline"
+
+      export FZF_CTRL_T_OPTS="
+        --walker-skip .git,node_modules,target,.direnv
+        --preview 'bat -n --color=always {}'
+        --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+
+      export FZF_ALT_C_OPTS="
+        --walker-skip .git,node_modules,target,.direnv
+        --preview 'tree -C {}'"
 
       # Options for path completion (e.g. vim **<TAB>)
       export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
@@ -92,6 +135,7 @@
     '';
 
     initExtra = ''
+      # nixpkg command to run a package in a nix-shell
       function nixpkgs() {
         NIXPKGS_ALLOW_UNFREE=1 nix shell "''${@/#/nixpkgs#}"
       }
@@ -115,10 +159,70 @@
 
       add-zsh-hook -Uz chpwd chpwd-osc7-pwd
 
-      PATH="$HOME/.deno/bin:$PATH"
+      # fzf based git auto completion
+      _fzf_complete_git() {
+          ARGS="$@"
+          if [[
+            $ARGS =~ 'rebase' ||
+            $ARGS =~ 'show' ||
+            $ARGS == 'cherry-pick'
+          ]]; then
+              _fzf_complete -- "$@" < <(
+                git log --oneline --no-decorate --no-merges
+              )
+          elif [[ $ARGS =~ 'branch' || $ARGS =~ 'checkout' || $ARGS =~ 'log' ]]; then
+              _fzf_complete -- "$@" < <(
+                git branch --sort=-committerdate --format='%(refname:short)'
+              )
+          elif [[ $ARGS =~ 'add' ]]; then
+              _fzf_complete "--ansi --multi" "$@" < <(
+                git -c color.status=always status -s | sed -r '/  /d'
+              )
+          else
+              eval "zle ''${fzf_default_completion: -expand-or-complete}"
+          fi
+      }
+      _fzf_complete_git_post() {
+        local cmd="$LBUFFER"
+        if [[ $cmd == 'git add '* ]]; then
+          sed -r 's/^ ?[^ ]+ ? //'
+        else
+          awk '{print $1}'
+        fi
+      }
+      [ -n "$BASH" ] && complete -F _fzf_complete_git -o default -o bashdefault git
 
-      # bindkey -d
-      # bindkey -v
+      # fzf: cd to ~/Code dir using Ctrl+o
+      code() {
+        local OUT=$(fzf --ansi --reverse \
+          --preview "onefetch $HOME/Code/{} 2> /dev/null || tree -C $HOME/Code/{}" < <(
+          fd --color=always -t d --follow \
+                -E .git -E node_modules -E target -E .direnv -E "bazel-*" -d 2 \
+                --base-directory $HOME/Code/ . ./Deno ./Personal/joe ./Personal ./
+        ))
+        if [ $? -eq 0 ] && [ -n "$OUT" ]; then
+          cd "$HOME/Code/$OUT"
+        fi
+        zle reset-prompt
+      }
+      zle -N code
+      bindkey '^o' code
+
+      # fzf: open file in neovim (sourced from git ls-files)
+      vimopen() {
+        local OUT=$(fzf --ansi --reverse \
+          --preview "bat --color=always {}" < <(
+          git ls-files
+        ))
+        if [ $? -eq 0 ] && [ -n "$OUT" ]; then
+          nvim "$OUT"
+        fi
+        zle reset-prompt
+      }
+      zle -N vimopen
+      bindkey '^p' vimopen
+
+      bindkey -v
     '';
   };
 }
