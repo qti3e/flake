@@ -147,7 +147,11 @@
   # QMK keyboard
   hardware.keyboard.qmk.enable = true;
   services.udev.packages = [ pkgs.via ];
-  environment.systemPackages = with pkgs; [ via ];
+  environment.systemPackages = with pkgs; [
+    via
+    man-pages
+    man-pages-posix
+  ];
 
   # CPU and GPU stuff
   hardware.cpu.intel.updateMicrocode = true;

@@ -1,4 +1,7 @@
-{ inputs, pkgs }:
+{
+  inputs,
+  pkgs,
+}:
 
 # Standalone neovim package
 inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
@@ -18,6 +21,10 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         number = true;
         undofile = true;
         relativenumber = true;
+        scrolloff = 5;
+        # otherwise the sudden appearance and disappearance of
+        # signcolumn is annoying.
+        signcolumn = "yes";
 
         foldenable = true;
         foldlevel = 99;
@@ -142,6 +149,18 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           action = "<Esc>:Telescope lsp_references<CR>";
           mode = [ "n" ];
           options.desc = "Show References";
+        }
+        {
+          key = "ge";
+          action.__raw = ''
+            function()
+              vim.diagnostic.goto_next({
+                severity = vim.diagnostic.severity.ERROR;
+              })
+            end
+          '';
+          mode = [ "n" ];
+          options.desc = "Next error diagnostic";
         }
         {
           key = "gn";
@@ -270,20 +289,31 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
       ];
 
+      diagnostics = {
+        severity_sort = true;
+        float = {
+          border = "rounded";
+        };
+        signs = {
+          # severity.min.__raw = "vim.diagnostic.severity.WARN";
+          text = {
+            "__rawKey__vim.diagnostic.severity.ERROR" = "󰅙";
+            "__rawKey__vim.diagnostic.severity.WARN" = "";
+            "__rawKey__vim.diagnostic.severity.INFO" = "󰋼";
+            "__rawKey__vim.diagnostic.severity.HINT" = "󰌵";
+          };
+        };
+        underline = {
+          severity.min.__raw = "vim.diagnostic.severity.ERROR";
+        };
+        jump = {
+          severity.__raw = "vim.diagnostic.severity.ERROR";
+        };
+      };
+
       extraConfigLuaPre = ''
-        vim.g.tlaplus_mappings_enable = true
-
+        vim.g.tlaplus_mappings_enable = false
         require("flatten").setup()
-
-        local symbols = { Error = "󰅙", Info = "󰋼", Hint = "󰌵", Warn = "" }
-        for name, icon in pairs(symbols) do
-        	local hl = "DiagnosticSign" .. name
-        	vim.fn.sign_define(hl, { text = icon, numhl = hl, texthl = hl })
-        end
-
-        vim.diagnostic.config {
-          float = { border = "rounded" },
-        }
       '';
 
       extraConfigLua = ''
@@ -298,26 +328,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               enabled = true,
             },
           }
-        })
-
-        require("scrollbar").setup({
-          handlers = {
-            cursor = true,
-            handle = false,
-            diagnostic = true,
-            gitsigns = true,
-          },
-          excluded_filetypes = {
-            "NvimTree",
-            "starter",
-          },
-          marks = {
-            Cursor = { text = "█" },
-            Error = { text = { symbols.Error } },
-            Warn = { text = { symbols.Warn } },
-            Info = { text = { symbols.Info } },
-            Hint = { text = { symbols.Hint } },
-          },
         })
 
         require'nvim-treesitter.configs'.setup {
@@ -468,7 +478,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         with pkgs.vimPlugins;
         [
           flatten-nvim
-          nvim-scrollbar
           actions-preview-nvim
           nvim-treesitter-parsers.tlaplus
         ]
@@ -603,7 +612,22 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             denols.enable = true;
             clangd.enable = true;
             zls.enable = true;
-            gopls.enable = true;
+            gopls = {
+              enable = true;
+              settings = {
+                workspaceFiles = [
+                  "**/BUILD"
+                  "**/WORKSPACE"
+                  "**/*.{bzl,bazel}"
+                ];
+                directoryFilters = [
+                  "-bazel-bin"
+                  "-bazel-out"
+                  "-bazel-testlogs"
+                  "-bazel-mypkg"
+                ];
+              };
+            };
           };
         };
 
@@ -618,11 +642,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
         fidget = {
           enable = true;
-          integration = {
-            nvim-tree = {
-              enable = true;
-            };
-          };
           progress = {
             display = {
               progressIcon = {
@@ -653,6 +672,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           enable = true;
           settings = {
             signcolumn = false;
+            numhl = false;
             current_line_blame = true;
             current_line_blame_opts.delay = 0;
           };
@@ -745,14 +765,24 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         lualine = {
           enable = true;
           settings = {
-            globalstatus = true;
-            componentSeparators = {
-              left = "|";
-              right = "|";
-            };
-            sectionSeparators = {
-              left = "";
-              right = "";
+            options = {
+              extensions = [
+                "trouble"
+                "quickfix"
+              ];
+              disabled_filetypes = {
+                __unkeyed-1 = "trouble";
+              };
+              ignore_focus = [ "trouble" ];
+              componentSeparators = {
+                left = "|";
+                right = "|";
+              };
+              sectionSeparators = {
+                left = "";
+                right = "";
+              };
+              globalstatus = true;
             };
             sections = {
               lualine_a = [
@@ -795,14 +825,43 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         mini = {
           enable = true;
           modules = {
-            diff = { };
+            diff = {
+              view = {
+                style = "sign";
+                signs = {
+                  add = "▒";
+                  change = "▒";
+                  delete = "▒";
+                };
+                priority = 5;
+              };
+            };
             bracketed = { };
           };
         };
       };
 
-      colorschemes.nightfox = {
+      colorscheme = "nightfox";
+      colorschemes.nightfox.enable = true;
+      colorschemes.kanagawa = {
         enable = true;
+        settings = {
+          commentStyle.italic = false;
+          keywordStyle.italic = false;
+          functionStyle.italic = false;
+        };
+      };
+      colorschemes.melange.enable = true;
+      # colorschemes.ayu.enable = true;
+      # colorschemes.nord.enable = true;
+      colorschemes.modus = {
+        enable = true;
+        settings = {
+          styles = {
+            comments.italic = false;
+            keywords.italic = false;
+          };
+        };
       };
     };
   };

@@ -23,7 +23,7 @@
     pointerCursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";
-      size = 48;
+      size = 20;
       x11.enable = true;
       gtk = {
         enable = true;

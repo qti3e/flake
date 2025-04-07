@@ -51,6 +51,10 @@ in
         # https://wiki.hyprland.org/Configuring/Monitors/
         # ",1920x1200@165.00Hz, 0x0, 1"
       ];
+      input = {
+        # bind ctrl to capslock key, ctrl hurts my pinky :(
+        "kb_options" = "ctrl:nocaps";
+      };
       general = {
         layout = "dwindle";
         gaps_out = 0;
@@ -116,7 +120,6 @@ in
       bind =
         [
           # "${mod}, grave, hyprexpo:expo, toggle"
-
           # App launcher
           # "${mod}, D, exec, ags -t applauncher"
 

@@ -13,6 +13,7 @@
 
       inotify-tools
       nix-tree
+      nix-search
 
       ripgrep-all
       ripgrep

@@ -16,6 +16,7 @@
       init.defaultBranch = "main";
       core.editor = "nvim";
       core.commentChar = "!";
+      push.autoSetupRemote = true;
     };
     ignores = [
       ".envrc"
