@@ -19,6 +19,11 @@ in
     hyprlock.enable = true;
   };
 
+  services.mako = {
+    enable = true;
+    maxVisible = 3;
+  };
+
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = with pkgs.hyprlandPlugins; [
@@ -39,6 +44,8 @@ in
       };
       debug.disable_logs = false;
       exec = [
+        "mako"
+
         # This will make sure that xdg-desktop-portal-hyprland can get the required variables on startup.
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 
@@ -119,6 +126,9 @@ in
       ];
       bind =
         [
+          # Notification destroyer 8000
+          "${mod}, D, exec, ${pkgs.mako}/bin/makoctl dismiss"
+
           # "${mod}, grave, hyprexpo:expo, toggle"
           # App launcher
           # "${mod}, D, exec, ags -t applauncher"

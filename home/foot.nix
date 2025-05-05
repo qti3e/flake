@@ -4,13 +4,15 @@
     enable = true;
     settings = {
       main = {
-        font = "Berkeley Mono:size=9, Symbols Nerd Font";
+        # font = "Monaspacekrypton-Light:size=9, Symbols Nerd Font";
+        font = "MonaspaceXenon-Light:size=9, Symbols Nerd Font";
         dpi-aware = "yes";
         pad = "0x0 center";
         term = "xterm-256color";
       };
       colors = {
-        "background" = "192330";
+        # "background" = "192330";
+        "background" = "000000";
         "foreground" = "d6d6d7";
         "regular0" = "131a24";
         "regular1" = "c94f6d";
@@ -30,6 +32,10 @@
         "bright7" = "c0caf5";
       };
       mouse.hide-when-typing = "yes";
+      cursor = {
+        style = "beam";
+        blink = "yes";
+      };
     };
   };
 }

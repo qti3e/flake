@@ -33,6 +33,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         foldcolumn = "0";
         foldmethod = "expr";
         foldexpr = "v:lua.vim.treesitter.foldexpr()";
+        guicursor = "a:block,i-ci:ver25";
       };
 
       globals.mapleader = ",";
@@ -330,6 +331,29 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           }
         })
 
+        -- autopait configs
+        local Rule = require('nvim-autopairs.rule')
+        local npairs = require('nvim-autopairs')
+        local cond = require('nvim-autopairs.conds')
+        npairs.add_rule(Rule("|", "|", { "rust", "go", "lua" })
+          :with_pair(cond.before_text("async"))
+          :with_pair(cond.before_text("move"))
+          :with_pair(cond.before_text("("))
+          :with_pair(cond.before_text("="))
+          :with_pair(cond.before_text(","))
+
+          :with_move(cond.after_regex "|")
+        )
+        npairs.add_rule(Rule("<", ">", { "rust", "typescript" })
+          :with_pair(cond.not_before_text(" "))
+          :with_pair(cond.not_before_text("<"))
+          :with_move(function(opts)
+            if opts.char == ">" then
+              return true
+            end
+            return false
+          end))
+
         require'nvim-treesitter.configs'.setup {
           textobjects = {
             select = {
@@ -460,6 +484,10 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           vim.api.nvim_set_option_value("textwidth", 80, { buf = bufnr })
         end
 
+        _G.deno_tabsz = function()
+          use_deno_tabsz({ buf = 0 })
+        end
+
         vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
           pattern = { "/home/qti3e/Code/Deno/*" },
           callback = use_deno_tabsz,
@@ -555,9 +583,15 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         lsp-format.enable = true;
         treesitter.enable = true;
         lsp-lines.enable = true;
-        nvim-autopairs.enable = true;
         nvim-colorizer.enable = true;
         commentary.enable = true;
+
+        nvim-autopairs = {
+          enable = true;
+          settings = {
+            check_ts = true;
+          };
+        };
 
         telescope = {
           enable = true;
@@ -762,65 +796,65 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           };
         };
 
-        lualine = {
-          enable = true;
-          settings = {
-            options = {
-              extensions = [
-                "trouble"
-                "quickfix"
-              ];
-              disabled_filetypes = {
-                __unkeyed-1 = "trouble";
-              };
-              ignore_focus = [ "trouble" ];
-              componentSeparators = {
-                left = "|";
-                right = "|";
-              };
-              sectionSeparators = {
-                left = "";
-                right = "";
-              };
-              globalstatus = true;
-            };
-            sections = {
-              lualine_a = [
-                {
-                  name = "mode";
-                  separator = {
-                    left = "";
-                  };
-                  padding = {
-                    left = 1;
-                    right = 2;
-                  };
-                }
-              ];
-              lualine_b = [ "branch" ];
-              lualine_c = [
-                {
-                  name = "filename";
-                  path = 1;
-                }
-              ];
-              lualine_x = [ "progress" ];
-              lualine_y = [ "filetype" ];
-              lualine_z = [
-                {
-                  name = "location";
-                  separator = {
-                    right = "";
-                  };
-                  padding = {
-                    left = 2;
-                    right = 1;
-                  };
-                }
-              ];
-            };
-          };
-        };
+        # lualine = {
+        #   enable = true;
+        #   settings = {
+        #     options = {
+        #       extensions = [
+        #         "trouble"
+        #         "quickfix"
+        #       ];
+        #       disabled_filetypes = {
+        #         __unkeyed-1 = "trouble";
+        #       };
+        #       ignore_focus = [ "trouble" ];
+        #       componentSeparators = {
+        #         left = "|";
+        #         right = "|";
+        #       };
+        #       sectionSeparators = {
+        #         left = "";
+        #         right = "";
+        #       };
+        #       globalstatus = true;
+        #     };
+        #     sections = {
+        #       lualine_a = [
+        #         {
+        #           name = "mode";
+        #           separator = {
+        #             left = "";
+        #           };
+        #           padding = {
+        #             left = 1;
+        #             right = 2;
+        #           };
+        #         }
+        #       ];
+        #       lualine_b = [ "branch" ];
+        #       lualine_c = [
+        #         {
+        #           name = "filename";
+        #           path = 1;
+        #         }
+        #       ];
+        #       lualine_x = [ "progress" ];
+        #       lualine_y = [ "filetype" ];
+        #       lualine_z = [
+        #         {
+        #           name = "location";
+        #           separator = {
+        #             right = "";
+        #           };
+        #           padding = {
+        #             left = 2;
+        #             right = 1;
+        #           };
+        #         }
+        #       ];
+        #     };
+        #   };
+        # };
 
         mini = {
           enable = true;
@@ -841,8 +875,146 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         };
       };
 
-      colorscheme = "nightfox";
-      colorschemes.nightfox.enable = true;
+      colorscheme = "dawnfox";
+      colorschemes.nightfox = {
+        enable = true;
+        settings =
+          let
+            shade = base: {
+              base = base;
+              bright = base;
+              dim = base;
+            };
+          in
+          let
+            pal = {
+              black = shade "#393b44";
+              red = shade "#c94f6d";
+              green = shade "#81b29a";
+              yellow = shade "#dbc074";
+              blue = shade "#719cd6";
+              magenta = shade "#9d79d6";
+              cyan = shade "#63cdcf";
+              white = shade "#dfdfe0";
+              orange = shade "#f4a261";
+              pink = shade "#d67ad2";
+
+              comment = "#a0a0a0";
+
+              bg0 = "#000000";
+              bg1 = "#010101";
+              bg2 = "#050505";
+              bg3 = "#0a0a0a";
+              bg4 = "#0f0f0f";
+
+              fg0 = "#fffafa";
+              fg1 = "#f4f5fa";
+              fg2 = "#f5f5f5";
+              fg3 = "#ffffff";
+
+              sel0 = "#393b44";
+              sel1 = "#555555";
+            };
+            pal2 = {
+              black = shade "#393b44";
+              red = shade "#c94f6d";
+              green = shade "#81b29a";
+              yellow = shade "#dbc074";
+              blue = shade "#719cd6";
+              magenta = shade "#9d79d6";
+              cyan = shade "#63cdcf";
+              white = shade "#dfdfe0";
+              orange = shade "#f4a261";
+              pink = shade "#d67ad2";
+
+              comment = "#505050";
+
+              bg0 = "#fafafa";
+              bg1 = "#fffafa";
+              bg2 = "#f4f5fa";
+              bg3 = "#f5f5f5";
+              bg4 = "#ffffff";
+
+              fg0 = "#000000";
+              fg1 = "#010101";
+              fg2 = "#050505";
+              fg3 = "#0a0a0a";
+
+              sel0 = "#738091";
+              sel1 = "#738091";
+            };
+          in
+          {
+            palettes.dawnfox = pal;
+            palettes.dayfox = pal2;
+            specs.dawnfox = {
+              syntax = {
+                bracket = pal.fg3; # Brackets and Punctuation
+                builtin0 = pal.fg2; # Builtin variable
+                builtin1 = pal.fg2; # Builtin type
+                builtin2 = pal.fg2; # Builtin const
+                builtin3 = pal.fg3; # Not used
+                comment = pal.comment; # Comment
+                conditional = pal.fg0; # Conditional and loop
+                const = pal.fg3; # Constants, imports and booleans
+                dep = pal.fg0; # Deprecated
+                field = pal.fg2; # Field
+                func = pal.fg2; # Functions and Titles
+                ident = pal.fg2; # Identifiers
+                keyword = pal.fg3; # Keywords
+                number = pal.fg1; # Numbers
+                operator = pal.fg2; # Operators
+                preproc = pal.fg0; # PreProc
+                regex = pal.fg2; # Regex
+                statement = pal.fg1; # Statements
+                string = pal.fg0; # Strings
+                type = pal.fg3; # Types
+                variable = pal.fg1; # Variables
+              };
+            };
+            groups.dawnfox = {
+              "LspInlayHint" = {
+                fg = pal.cyan.base;
+              };
+              "GitSignsCurrentLineBlame" = {
+                fg = pal.green.base;
+              };
+            };
+            specs.dayfox = {
+              syntax = {
+                bracket = pal2.fg3; # Brackets and Punctuation
+                builtin0 = pal2.fg2; # Builtin variable
+                builtin1 = pal2.fg2; # Builtin type
+                builtin2 = pal2.fg2; # Builtin const
+                builtin3 = pal2.fg3; # Not used
+                comment = pal2.comment; # Comment
+                conditional = pal2.fg0; # Conditional and loop
+                const = pal2.fg3; # Constants, imports and booleans
+                dep = pal2.fg0; # Deprecated
+                field = pal2.fg2; # Field
+                func = pal2.fg2; # Functions and Titles
+                ident = pal2.fg2; # Identifiers
+                keyword = pal2.fg3; # Keywords
+                number = pal2.fg1; # Numbers
+                operator = pal2.fg2; # Operators
+                preproc = pal2.fg0; # PreProc
+                regex = pal2.fg2; # Regex
+                statement = pal2.fg1; # Statements
+                string = pal2.fg0; # Strings
+                type = pal2.fg3; # Types
+                variable = pal2.fg1; # Variables
+              };
+            };
+            groups.dayfox = {
+              "LspInlayHint" = {
+                fg = pal2.cyan.base;
+              };
+              "GitSignsCurrentLineBlame" = {
+                fg = pal2.pink.base;
+              };
+            };
+          };
+      };
       colorschemes.kanagawa = {
         enable = true;
         settings = {
@@ -852,8 +1024,14 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         };
       };
       colorschemes.melange.enable = true;
-      # colorschemes.ayu.enable = true;
-      # colorschemes.nord.enable = true;
+      colorschemes.ayu.enable = true;
+      colorschemes.nord.enable = true;
+      colorschemes.vscode.enable = true;
+      colorschemes.one.enable = true;
+      colorschemes.onedark.enable = true;
+      colorschemes.everforest.enable = true;
+      colorschemes.cyberdream.enable = true;
+      colorschemes.gruvbox.enable = true;
       colorschemes.modus = {
         enable = true;
         settings = {
