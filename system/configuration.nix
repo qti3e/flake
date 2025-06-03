@@ -111,7 +111,10 @@
   #   StateDirectory = "dnscrypt-proxy";
   # };
 
-  time.timeZone = "America/Chicago";
+  services.tailscale.enable = true;
+
+  # use 
+  time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
@@ -272,6 +275,18 @@
   fonts.fontconfig.enable = true;
 
   programs = {
+    nix-ld.enable = true;
+    nix-ld.libraries = with pkgs; [
+      stdenv.cc.cc
+      zlib
+      fuse3
+      icu
+      nss
+      openssl
+      curl
+      expat
+    ];
+
     steam.enable = true;
 
     # enable installing zsh at the system level to set the users default terminal. Everything else configuration wise is done in home manager.
