@@ -155,7 +155,29 @@
     via
     man-pages
     man-pages-posix
+    clamav
   ];
+
+  services.clamav = {
+    daemon = {
+      enable = true; # starts clamd
+      # Optional clamd.conf settings:
+      settings = {
+        # Use either a local socket (default)...
+        LocalSocket = "/run/clamav/clamd.ctl";
+        # ...or expose TCP (comment LocalSocket if you use these):
+        # TCPSocket = 3310;
+        # TCPAddr = "127.0.0.1";
+        # Example extra tuning:
+        # MaxFileSize = "100M";
+        # StreamMaxLength = "200M";
+      };
+    };
+    updater = {
+      enable = true; # runs freshclam to keep AV DB up to date
+      # You can also add settings = { DatabaseMirror = "database.clamav.net"; }; if needed
+    };
+  };
 
   # CPU and GPU stuff
   hardware.cpu.intel.updateMicrocode = true;
@@ -330,4 +352,17 @@
   # on your system were taken. It‘s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   system.stateVersion = "24.05"; # Did you read the comment?
+
+  system.autoUpgrade = {
+    enable = true;
+    dates = "Sat 05:00";
+    allowReboot = false;
+    flake = "/etc/nixos";
+    # Optional: pass nixos-rebuild flags (handy for updating lock file)
+    flags = [
+      "--update-input"
+      "nixpkgs"
+      "--commit-lock-file"
+    ];
+  };
 }
