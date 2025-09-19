@@ -5,7 +5,7 @@
     settings = {
       main = {
         # font = "Monaspacekrypton-Light:size=9, Symbols Nerd Font";
-        font = "MonaspaceXenon-Light:size=9, Symbols Nerd Font";
+        font = "MonaspaceXenon:size=8, Symbols Nerd Font";
         dpi-aware = "yes";
         pad = "0x0 center";
         term = "xterm-256color";

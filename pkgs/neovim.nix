@@ -573,10 +573,20 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               hash = "sha256-YdXBzxB5yfpPJJ1wVRdl6i1rPDzgwrxB1Onlkixk4/c=";
             };
           })
+
+          # https://github.com/arthurxavierx/vim-unicoder
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "vim-tla";
+            src = pkgs.fetchFromGitHub {
+              owner = "arthurxavierx";
+              repo = "vim-unicoder";
+              rev = "a71fc3670f9337c56806fa9e8e97b7ea09fd5e39";
+              hash = "sha256-Cyw+qZ3N7DvwVB6jSlWFxn6dHILj+wnmzrvdBFLvls0=";
+            };
+          })
         ];
 
       plugins = {
-        wakatime.enable = true;
         neoscroll.enable = true;
         gitlinker.enable = true;
         web-devicons.enable = true;
@@ -585,6 +595,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         lsp-lines.enable = true;
         nvim-colorizer.enable = true;
         commentary.enable = true;
+        wakatime.enable = true;
 
         nvim-autopairs = {
           enable = true;
@@ -643,7 +654,13 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               settings.formatting.command = [ "${pkgs.nixfmt-rfc-style}/bin/nixfmt" ];
             };
             lua_ls.enable = true;
-            denols.enable = true;
+            denols = {
+              enable = true;
+              cmd = [
+                "/home/qti3e/.cargo/bin/deno"
+                "lsp"
+              ];
+            };
             clangd.enable = true;
             zls.enable = true;
             gopls = {

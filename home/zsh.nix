@@ -56,12 +56,19 @@
       icat = "wezterm imgcat";
       fuck = "thefuck";
       switch = "sudo nixos-rebuild switch";
+      # daily notes
+      "di+1" = "nvim /home/qti3e/Documents/daily/$(date -d '+1 day' +'%y-%m-%d.txt')";
+      di = "nvim /home/qti3e/Documents/daily/$(date +'%y-%m-%d.txt')";
+      di-1 = "nvim /home/qti3e/Documents/daily/$(date -d '-1 day' +'%y-%m-%d.txt')";
+      di-2 = "nvim /home/qti3e/Documents/daily/$(date -d '-2 day' +'%y-%m-%d.txt')";
+      dt = "rg '\[todo\]' ~/Documents/daily";
     };
 
     sessionVariables = {
       # Let's break up words more
       WORDCHARS = "*?[]~=&;!#$%^(){}<>";
       PATH = "$HOME/.deno/bin:$PATH";
+      DENO_UNSTABLE_NPM_LAZY_CACHING = "1";
     };
 
     plugins = [

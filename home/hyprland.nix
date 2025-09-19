@@ -24,6 +24,31 @@ in
     maxVisible = 3;
   };
 
+  services.hypridle = {
+    enable = true;
+    settings = {
+      general = {
+        # hypridle can call the locker directly:
+        lock_cmd = "hyprlock";
+        after_sleep_cmd = "hyprctl dispatch dpms on";
+      };
+      listener = [
+        # After 15 minutes, lock. (900 seconds)
+        {
+          timeout = 900;
+          on-timeout = "pidof hyprlock >/dev/null || hyprlock";
+          on-resume = "hyprctl dispatch dpms on";
+        }
+        # Turn off displays a bit later
+        {
+          timeout = 960;
+          on-timeout = "hyprctl dispatch dpms off";
+          on-resume = "hyprctl dispatch dpms on";
+        }
+      ];
+    };
+  };
+
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = with pkgs.hyprlandPlugins; [
@@ -56,7 +81,7 @@ in
       source = [ "./themes/regular.conf" ];
       monitor = [
         # https://wiki.hyprland.org/Configuring/Monitors/
-        # ",1920x1200@165.00Hz, 0x0, 1"
+        ",2560x1600@165.00Hz, 0x0, 1"
       ];
       input = {
         # bind ctrl to capslock key, ctrl hurts my pinky :(
@@ -100,8 +125,8 @@ in
         };
         rounding = 0;
         dim_special = "0.0";
-        dim_inactive = true;
-        dim_strength = 0.3;
+        # dim_inactive = true;
+        # dim_strength = 0.3;
       };
       misc = {
         disable_hyprland_logo = true;
@@ -127,7 +152,7 @@ in
       bind =
         [
           # Notification destroyer 8000
-          "${mod}, D, exec, ${pkgs.mako}/bin/makoctl dismiss"
+          "${mod}, D, exec, ${pkgs.mako}/bin/makoctl dismiss -a"
 
           # "${mod}, grave, hyprexpo:expo, toggle"
           # App launcher

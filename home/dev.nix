@@ -3,10 +3,12 @@
   home = {
     packages = with pkgs; [
       neovim
+      tailscale
 
       deno
       curl
       gnumake
+      nodejs_23
 
       litemdview
       graph-easy
@@ -25,6 +27,7 @@
       sqlite
 
       kubectl
+      clamav
     ];
 
     sessionVariables = {
