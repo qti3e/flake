@@ -156,6 +156,15 @@
     man-pages
     man-pages-posix
     clamav
+
+    cryptsetup
+    e2fsprogs
+    util-linux
+    rsync
+    lsof
+    gptfdisk
+    parted
+    pv
   ];
 
   services.clamav = {
