@@ -114,5 +114,5 @@ hist() {
   fi
   zle reset-prompt
 }
-zle -N hist
-bindkey '^h' hist
+# zle -N hist
+# bindkey '^h' hist

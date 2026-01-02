@@ -34,11 +34,26 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         foldmethod = "expr";
         foldexpr = "v:lua.vim.treesitter.foldexpr()";
         guicursor = "a:block,i-ci:ver25";
+
+        termguicolors = true;
       };
 
       globals.mapleader = ",";
 
       keymaps = [
+        {
+          key = "<C-j>";
+          action = "<Down>";
+          mode = [ "c" ];
+          options.desc = "Command-line history down";
+        }
+        {
+          key = "<C-k>";
+          action = "<Up>";
+          mode = [ "c" ];
+          options.desc = "Command-line history up";
+        }
+
         {
           key = "<leader>tp";
           action.__raw = ''
@@ -77,14 +92,12 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
         {
           key = "<leader>t";
-          # action = "<cmd>NvimTreeToggle<CR>";
           action = "<cmd>Telescope file_browser<CR>";
           mode = [ "n" ];
           options.desc = "Toggle file browser";
         }
         {
           key = "<leader>?";
-          # action = "<cmd>NvimTreeFindFile<CR>";
           action = "<cmd>Telescope file_browser path=%:p:h select_buffer=true<CR>";
           mode = [ "n" ];
           options.desc = "Open file tree on the current file";
@@ -331,7 +344,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           }
         })
 
-        -- autopait configs
+        -- autopair configs
         local Rule = require('nvim-autopairs.rule')
         local npairs = require('nvim-autopairs')
         local cond = require('nvim-autopairs.conds')
@@ -431,7 +444,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
         require("actions-preview").setup()
         require('lsp_lines').toggle()
-        require("lsp-endhints").enable()
 
         vim.cmd([[
             hi Conceal guifg=#ff0000
@@ -492,6 +504,17 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           pattern = { "/home/qti3e/Code/Deno/*" },
           callback = use_deno_tabsz,
         });
+
+        -- https://github.com/neovim/neovim/issues/30985#issuecomment-2447329525
+        for _, method in ipairs({ 'textDocument/diagnostic', 'workspace/diagnostic' }) do
+            local default_diagnostic_handler = vim.lsp.handlers[method]
+            vim.lsp.handlers[method] = function(err, result, context, config)
+                if err ~= nil and err.code == -32802 then
+                    return
+                end
+                return default_diagnostic_handler(err, result, context, config)
+            end
+        end
       '';
 
       # Use experimental lua loader with jit cache
@@ -527,28 +550,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               repo = "crates.nvim";
               rev = "6bf1b4ceb62f205c903590ccc62061aafc17024a";
               hash = "sha256-ijuz7abSLNTjgeIThtV+MV6SMBWgcAWcPK7yYpB9HeI=";
-            };
-          })
-
-          # https://github.com/andreasvc/vim-256noir
-          (pkgs.vimUtils.buildVimPlugin {
-            name = "256noir";
-            src = pkgs.fetchFromGitHub {
-              owner = "andreasvc";
-              repo = "vim-256noir";
-              rev = "e8668a18a4a90272c1cae87e655f8bddc5ac3665";
-              hash = "sha256-HeS5nSnPk95YBaBEGIcEf6dfqQ3NvHHW0+u14tIZ9s4=";
-            };
-          })
-
-          # https://github.com/chrisgrieser/nvim-lsp-endhints?tab=readme-ov-file
-          (pkgs.vimUtils.buildVimPlugin {
-            name = "lsp-endhints";
-            src = pkgs.fetchFromGitHub {
-              owner = "chrisgrieser";
-              repo = "nvim-lsp-endhints";
-              rev = "391ef40521b631a8a2fb7aef78db6967ead6b39d";
-              hash = "sha256-dCySjZoCxcCkt8D1UVJF9wQheU8vgmDxkI0JeGURpnQ=";
             };
           })
 
@@ -593,7 +594,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         lsp-format.enable = true;
         treesitter.enable = true;
         lsp-lines.enable = true;
-        nvim-colorizer.enable = true;
         commentary.enable = true;
         wakatime.enable = true;
 
@@ -610,6 +610,15 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             enable = true;
             settings = {
               hijack_netrw = true;
+            };
+          };
+          settings = {
+            layout_config.prompt_position = "top";
+            mappings = {
+              i = {
+                "<C-j>".__raw = "require('telescope.actions').move_selection_next";
+                "<C-k>".__raw = "require('telescope.actions').move_selection_previous";
+              };
             };
           };
         };
@@ -647,7 +656,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
         lsp = {
           enable = true;
-          inlayHints = true;
+          inlayHints = false;
           servers = {
             nil_ls = {
               enable = true;
@@ -656,10 +665,11 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             lua_ls.enable = true;
             denols = {
               enable = true;
-              cmd = [
-                "/home/qti3e/.cargo/bin/deno"
-                "lsp"
-              ];
+              package = null;
+              # cmd = [
+              #   "/home/qti3e/.cargo/bin/deno"
+              #   "lsp"
+              # ];
             };
             clangd.enable = true;
             zls.enable = true;
@@ -679,15 +689,15 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
                 ];
               };
             };
-          };
-        };
-
-        rustaceanvim = {
-          enable = true;
-          settings = {
-            tools.hover_actions.replace_builtin_hover = true;
-            server.default_settings.rust_analyzer.check.command = "clippy";
-            server.on_attach = "__lspOnAttach";
+            rust_analyzer = {
+              enable = true;
+              package = null;
+              installCargo = false;
+              installRustc = false;
+              settings = {
+                check.command = "clippy";
+              };
+            };
           };
         };
 
@@ -724,154 +734,45 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           settings = {
             signcolumn = false;
             numhl = false;
-            current_line_blame = true;
+            current_line_blame = false;
             current_line_blame_opts.delay = 0;
           };
         };
 
-        cmp-nvim-lsp.enable = true;
-        cmp-path.enable = true;
-        cmp-buffer.enable = true;
-        cmp-git.enable = true;
-        cmp = {
+        blink-cmp = {
           enable = true;
-          autoEnableSources = false;
           settings = {
-            sources = [
-              { name = "nvim_lsp"; }
-              { name = "path"; }
-              { name = "buffer"; }
-              { name = "git"; }
-              { name = "crates"; }
-            ];
-            view = {
-              entries = {
-                name = "custom";
-                selection_order = "near_cursor";
-              };
+            keymap = {
+              "<C-space>" = [
+                "show"
+                "show_documentation"
+                "hide_documentation"
+              ];
+              "<C-e>" = [ "hide" ];
+              "<C-y>" = [ "select_and_accept" ];
+              "<CR>" = [
+                "select_and_accept"
+                "fallback"
+              ];
+              "<Tab>" = [
+                "select_next"
+                "fallback"
+              ];
+              "<S-Tab>" = [
+                "select_prev"
+                "fallback"
+              ];
+              "<C-b>" = [
+                "scroll_documentation_up"
+                "fallback"
+              ];
+              "<C-f>" = [
+                "scroll_documentation_down"
+                "fallback"
+              ];
             };
-            formatting.__raw = ''
-              {
-                fields = { "kind", "abbr", "menu" },
-                format = function(_, vim_item)
-                  local icons = {
-                    Text = '  ',
-                    Method = '  ',
-                    Function = '  ',
-                    Constructor = '  ',
-                    Field = '  ',
-                    Variable = '  ',
-                    Class = '  ',
-                    Interface = '  ',
-                    Module = '  ',
-                    Property = '  ',
-                    Unit = '  ',
-                    Value = '  ',
-                    Enum = '  ',
-                    Keyword = '  ',
-                    Snippet = '  ',
-                    Color = '  ',
-                    File = '  ',
-                    Reference = '  ',
-                    Folder = '  ',
-                    EnumMember = '  ',
-                    Constant = '  ',
-                    Struct = '  ',
-                    Event = '  ',
-                    Operator = '  ',
-                    TypeParameter = '  ',
-                  }
-                  local kind = vim_item.kind
-                  vim_item.kind = (icons[kind] or "")
-                  vim_item.menu = "   " .. (kind or "")
-                  return vim_item
-                end,
-              }
-            '';
-            mapping = {
-              "<C-Space>" = "cmp.mapping.complete()";
-              "<C-d>" = "cmp.mapping.scroll_docs(-4)";
-              "<C-e>" = "cmp.mapping.close()";
-              "<C-f>" = "cmp.mapping.scroll_docs(4)";
-              "<CR>" = "cmp.mapping.confirm({ select = true })";
-              "<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
-              "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
-            };
-            snippet = {
-              expand = ''
-                function(args)
-                  vim.snippet.expand(args.body)
-                end
-              '';
-            };
-            window.__raw = ''
-              {
-                completion = cmp.config.window.bordered(),
-                documentation = cmp.config.window.bordered(),
-              }
-            '';
           };
         };
-
-        # lualine = {
-        #   enable = true;
-        #   settings = {
-        #     options = {
-        #       extensions = [
-        #         "trouble"
-        #         "quickfix"
-        #       ];
-        #       disabled_filetypes = {
-        #         __unkeyed-1 = "trouble";
-        #       };
-        #       ignore_focus = [ "trouble" ];
-        #       componentSeparators = {
-        #         left = "|";
-        #         right = "|";
-        #       };
-        #       sectionSeparators = {
-        #         left = "";
-        #         right = "";
-        #       };
-        #       globalstatus = true;
-        #     };
-        #     sections = {
-        #       lualine_a = [
-        #         {
-        #           name = "mode";
-        #           separator = {
-        #             left = "";
-        #           };
-        #           padding = {
-        #             left = 1;
-        #             right = 2;
-        #           };
-        #         }
-        #       ];
-        #       lualine_b = [ "branch" ];
-        #       lualine_c = [
-        #         {
-        #           name = "filename";
-        #           path = 1;
-        #         }
-        #       ];
-        #       lualine_x = [ "progress" ];
-        #       lualine_y = [ "filetype" ];
-        #       lualine_z = [
-        #         {
-        #           name = "location";
-        #           separator = {
-        #             right = "";
-        #           };
-        #           padding = {
-        #             left = 2;
-        #             right = 1;
-        #           };
-        #         }
-        #       ];
-        #     };
-        #   };
-        # };
 
         mini = {
           enable = true;
@@ -892,172 +793,134 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         };
       };
 
-      colorscheme = "dawnfox";
-      colorschemes.nightfox = {
-        enable = true;
-        settings =
-          let
-            shade = base: {
-              base = base;
-              bright = base;
-              dim = base;
-            };
-          in
-          let
-            pal = {
-              black = shade "#393b44";
-              red = shade "#c94f6d";
-              green = shade "#81b29a";
-              yellow = shade "#dbc074";
-              blue = shade "#719cd6";
-              magenta = shade "#9d79d6";
-              cyan = shade "#63cdcf";
-              white = shade "#dfdfe0";
-              orange = shade "#f4a261";
-              pink = shade "#d67ad2";
+      highlightOverride = {
+        # Base UI
+        Normal = {
+          fg = "#ffffff";
+          bg = "#000000";
+        };
+        NormalFloat = {
+          fg = "#ffffff";
+          bg = "#0a0a0a";
+        };
+        FloatBorder = {
+          fg = "#444444";
+          bg = "#0a0a0a";
+        };
+        CursorLine = {
+          bg = "#111111";
+        };
+        CursorLineNr = {
+          fg = "#ffffff";
+          bold = true;
+        };
+        LineNr = {
+          fg = "#444444";
+        };
+        Visual = {
+          bg = "#333333";
+        };
+        Search = {
+          fg = "#000000";
+          bg = "#ffffff";
+        };
+        IncSearch = {
+          fg = "#000000";
+          bg = "#ffffff";
+        };
+        Pmenu = {
+          fg = "#ffffff";
+          bg = "#111111";
+        };
+        PmenuSel = {
+          fg = "#000000";
+          bg = "#ffffff";
+        };
+        StatusLine = {
+          fg = "#ffffff";
+          bg = "#111111";
+        };
+        StatusLineNC = {
+          fg = "#666666";
+          bg = "#0a0a0a";
+        };
+        VertSplit = {
+          fg = "#222222";
+        };
+        SignColumn = {
+          bg = "#000000";
+        };
 
-              comment = "#a0a0a0";
+        # Syntax - all white
+        Comment = {
+          fg = "#666666";
+          italic = false;
+        };
+        Constant = {
+          fg = "#ffffff";
+        };
+        String = {
+          fg = "#ffffff";
+        };
+        Identifier = {
+          fg = "#ffffff";
+        };
+        Function = {
+          fg = "#ffffff";
+        };
+        Statement = {
+          fg = "#ffffff";
+        };
+        Operator = {
+          fg = "#ffffff";
+        };
+        Keyword = {
+          fg = "#ffffff";
+        };
+        Type = {
+          fg = "#ffffff";
+        };
+        Special = {
+          fg = "#ffffff";
+        };
+        PreProc = {
+          fg = "#ffffff";
+        };
+        Delimiter = {
+          fg = "#ffffff";
+        };
 
-              bg0 = "#000000";
-              bg1 = "#010101";
-              bg2 = "#050505";
-              bg3 = "#0a0a0a";
-              bg4 = "#0f0f0f";
+        # Diagnostics
+        DiagnosticError = {
+          fg = "#ff6666";
+        };
+        DiagnosticWarn = {
+          fg = "#ffcc66";
+        };
+        DiagnosticInfo = {
+          fg = "#6699ff";
+        };
+        DiagnosticHint = {
+          fg = "#666666";
+        };
 
-              fg0 = "#fffafa";
-              fg1 = "#f4f5fa";
-              fg2 = "#f5f5f5";
-              fg3 = "#ffffff";
+        # Git signs
+        GitSignsAdd = {
+          fg = "#666666";
+        };
+        GitSignsChange = {
+          fg = "#666666";
+        };
+        GitSignsDelete = {
+          fg = "#666666";
+        };
 
-              sel0 = "#393b44";
-              sel1 = "#555555";
-            };
-            pal2 = {
-              black = shade "#393b44";
-              red = shade "#c94f6d";
-              green = shade "#81b29a";
-              yellow = shade "#dbc074";
-              blue = shade "#719cd6";
-              magenta = shade "#9d79d6";
-              cyan = shade "#63cdcf";
-              white = shade "#dfdfe0";
-              orange = shade "#f4a261";
-              pink = shade "#d67ad2";
-
-              comment = "#505050";
-
-              bg0 = "#fafafa";
-              bg1 = "#fffafa";
-              bg2 = "#f4f5fa";
-              bg3 = "#f5f5f5";
-              bg4 = "#ffffff";
-
-              fg0 = "#000000";
-              fg1 = "#010101";
-              fg2 = "#050505";
-              fg3 = "#0a0a0a";
-
-              sel0 = "#738091";
-              sel1 = "#738091";
-            };
-          in
-          {
-            palettes.dawnfox = pal;
-            palettes.dayfox = pal2;
-            specs.dawnfox = {
-              syntax = {
-                bracket = pal.fg3; # Brackets and Punctuation
-                builtin0 = pal.fg2; # Builtin variable
-                builtin1 = pal.fg2; # Builtin type
-                builtin2 = pal.fg2; # Builtin const
-                builtin3 = pal.fg3; # Not used
-                comment = pal.comment; # Comment
-                conditional = pal.fg0; # Conditional and loop
-                const = pal.fg3; # Constants, imports and booleans
-                dep = pal.fg0; # Deprecated
-                field = pal.fg2; # Field
-                func = pal.fg2; # Functions and Titles
-                ident = pal.fg2; # Identifiers
-                keyword = pal.fg3; # Keywords
-                number = pal.fg1; # Numbers
-                operator = pal.fg2; # Operators
-                preproc = pal.fg0; # PreProc
-                regex = pal.fg2; # Regex
-                statement = pal.fg1; # Statements
-                string = pal.fg0; # Strings
-                type = pal.fg3; # Types
-                variable = pal.fg1; # Variables
-              };
-            };
-            groups.dawnfox = {
-              "LspInlayHint" = {
-                fg = pal.cyan.base;
-              };
-              "GitSignsCurrentLineBlame" = {
-                fg = pal.green.base;
-              };
-            };
-            specs.dayfox = {
-              syntax = {
-                bracket = pal2.fg3; # Brackets and Punctuation
-                builtin0 = pal2.fg2; # Builtin variable
-                builtin1 = pal2.fg2; # Builtin type
-                builtin2 = pal2.fg2; # Builtin const
-                builtin3 = pal2.fg3; # Not used
-                comment = pal2.comment; # Comment
-                conditional = pal2.fg0; # Conditional and loop
-                const = pal2.fg3; # Constants, imports and booleans
-                dep = pal2.fg0; # Deprecated
-                field = pal2.fg2; # Field
-                func = pal2.fg2; # Functions and Titles
-                ident = pal2.fg2; # Identifiers
-                keyword = pal2.fg3; # Keywords
-                number = pal2.fg1; # Numbers
-                operator = pal2.fg2; # Operators
-                preproc = pal2.fg0; # PreProc
-                regex = pal2.fg2; # Regex
-                statement = pal2.fg1; # Statements
-                string = pal2.fg0; # Strings
-                type = pal2.fg3; # Types
-                variable = pal2.fg1; # Variables
-              };
-            };
-            groups.dayfox = {
-              "LspInlayHint" = {
-                fg = pal2.cyan.base;
-              };
-              "GitSignsCurrentLineBlame" = {
-                fg = pal2.pink.base;
-              };
-            };
-          };
-      };
-      colorschemes.kanagawa = {
-        enable = true;
-        settings = {
-          commentStyle.italic = false;
-          keywordStyle.italic = false;
-          functionStyle.italic = false;
+        # LSP
+        LspInlayHint = {
+          fg = "#444444";
         };
       };
-      colorschemes.melange.enable = true;
-      colorschemes.ayu.enable = true;
-      colorschemes.nord.enable = true;
-      colorschemes.vscode.enable = true;
-      colorschemes.one.enable = true;
-      colorschemes.onedark.enable = true;
-      colorschemes.everforest.enable = true;
-      colorschemes.cyberdream.enable = true;
-      colorschemes.gruvbox.enable = true;
-      colorschemes.modus = {
-        enable = true;
-        settings = {
-          styles = {
-            comments.italic = false;
-            keywords.italic = false;
-          };
-        };
-      };
+
     };
   };
 }

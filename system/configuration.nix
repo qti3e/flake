@@ -28,7 +28,7 @@
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d";
+      options = "--delete-older-than 60d";
     };
   };
 
@@ -46,7 +46,7 @@
   virtualisation.docker = {
     enable = true;
     daemon.settings = {
-      data-root = "/var/lib/docker2";
+      data-root = "/var/lib/docker";
       ipv6 = true;
       fixed-cidr-v6 = "fd00::/80";
     };

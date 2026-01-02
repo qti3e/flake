@@ -48,13 +48,9 @@
       commit = "git commit";
       add = "git add";
       rebase = "git stash && git pull --rebase && git stash pop";
-      ytop = "ytop -spfa";
       n = "nvim";
       c = "cargo";
-      rs = "rust-script";
       wq = "exit";
-      icat = "wezterm imgcat";
-      fuck = "thefuck";
       switch = "sudo nixos-rebuild switch";
       # daily notes
       "di+1" = "nvim /home/qti3e/Documents/daily/$(date -d '+1 day' +'%y-%m-%d.txt')";
@@ -149,8 +145,27 @@
 
       source ${config.lib.file.mkOutOfStoreSymlink flakeDirectory + "/home/zsh/fzf.sh"}
 
+
+      bindkey '^K' history-beginning-search-backward
+      bindkey '^J' history-beginning-search-forward
+      bindkey '^A' beginning-of-line
+      bindkey '^E' end-of-line
       bindkey '^ ' autosuggest-accept
+      bindkey '^W' backward-kill-word
+      bindkey '^U' backward-kill-line   # delete to start
+      bindkey '^Y' yank                 # paste
+      bindkey '^.' insert-last-word
+
+      bindkey '^b' backward-word       # Alt+b
+      bindkey '^f' forward-word        # Alt+f
+      bindkey '^x' kill-word
+
       bindkey -v
+      export KEYTIMEOUT=1
+
+      # vi normal mode extras
+      bindkey -M vicmd 'H' beginning-of-line
+      bindkey -M vicmd 'L' end-of-line
     '';
   };
 }

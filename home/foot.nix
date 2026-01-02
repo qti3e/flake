@@ -32,6 +32,7 @@
         "bright7" = "c0caf5";
       };
       mouse.hide-when-typing = "yes";
+      mouse-bindings.primary-paste = "Control+BTN_MIDDLE";
       cursor = {
         style = "beam";
         blink = "yes";

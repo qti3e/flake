@@ -18,18 +18,6 @@
     };
 
     # Applications
-    ags = {
-      url = "github:ozwaldorf/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    wezterm = {
-      url = "github:wez/wezterm?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # lutgen = {
-    #   url = "github:ozwaldorf/lutgen-rs";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -43,6 +31,11 @@
   nixConfig = {
     extra-substituters = [ "https://cache.garnix.io" ];
     extra-trusted-public-keys = [ "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" ];
+
+    # Fast offline failure
+    fallback = false;
+    connect-timeout = 1;
+    tarball-ttl = 31536000;
   };
 
   outputs =

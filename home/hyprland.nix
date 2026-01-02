@@ -53,7 +53,6 @@ in
     enable = true;
     plugins = with pkgs.hyprlandPlugins; [
       hyprexpo
-      hyprtrails
     ];
     settings = {
       plugins = {
@@ -79,23 +78,36 @@ in
         "eww open bar"
       ];
       source = [ "./themes/regular.conf" ];
-      monitor = [
-        # https://wiki.hyprland.org/Configuring/Monitors/
-        ",2560x1600@165.00Hz, 0x0, 1"
-      ];
+      # monitor = [
+      #   # https://wiki.hyprland.org/Configuring/Monitors/
+      #   ",2560x1600@165.00Hz, 0x0, 1"
+      # ];
       input = {
         # bind ctrl to capslock key, ctrl hurts my pinky :(
         "kb_options" = "ctrl:nocaps";
       };
+      workspace = [
+        # "m[0] w[t1], gapsout:80 80"
+        # "m[0] w[t2], gapsout:40 40"
+        # On widescreen monitor, pad 1 and 2 wide workspaces
+        # "m[0] w[t1], gapsout:80 600"
+        # "m[0] w[t2], gapsout:40 300"
+
+        # "w[t1], gapsout:80 600"
+        # "w[t2], gapsout:40 300"
+
+        "w[t1], gapsout:40 40"
+        "w[t2], gapsout:40 40"
+      ];
       general = {
         layout = "dwindle";
-        gaps_out = 0;
-        gaps_in = 0;
+        # gaps_out = 0;
+        # gaps_in = 0;
         "col.active_border" = "#131a24";
         "col.inactive_border" = "$base";
       };
       cursor = {
-        inactive_timeout = 3;
+        inactive_timeout = 1;
       };
       dwindle = {
         pseudotile = true;
@@ -123,7 +135,7 @@ in
           xray = false;
           new_optimizations = true;
         };
-        rounding = 0;
+        rounding = 10;
         dim_special = "0.0";
         # dim_inactive = true;
         # dim_strength = 0.3;
@@ -144,7 +156,6 @@ in
         "blur,applauncher*"
         "ignorealpha,applauncher*"
       ];
-      # workspace = [ "w[t1], gapsout:10 1200" ];
       bindm = [
         "${mod},mouse:272,movewindow"
         "${mod},mouse:273,resizewindow"
@@ -170,18 +181,18 @@ in
           "SHIFT, Print, exec, hyprshot --clipboard-only -zm region"
 
           # Cycle wallpaper
-          "${mod}, W, exec, bash -c 'swww img --transition-type any $(find ~/Pictures/walls/carburetor | shuf -n 1)'"
+          # "${mod}, W, exec, bash -c 'swww img --transition-type any $(find ~/Pictures/walls/carburetor | shuf -n 1)'"
 
           # Window management
           "${mod} SHIFT, E, exit"
           "${mod} SHIFT, Q, killactive"
-          "${mod}, J, togglesplit"
+          "${mod}, R, togglesplit"
           "${mod} SHIFT, Space, togglefloating"
 
           # Groups
           "${mod}, G, togglegroup"
           "${mod}, Tab, changegroupactive, f"
-          "${mod}, Shift, changegroupactive, b"
+          "${mod} SHIFT, Tab, changegroupactive, b"
           "${mod} CTRL, Left, movegroupwindow, b"
           "${mod} CTRL, Right, movegroupwindow"
 
@@ -194,6 +205,18 @@ in
           "${mod} SHIFT, right, movewindoworgroup, r"
           "${mod} SHIFT, up, movewindoworgroup, u"
           "${mod} SHIFT, down, movewindoworgroup, d"
+
+          # Window traversal and movement HJKL
+          "${mod} CTRL, H, movegroupwindow, b"
+          "${mod} CTRL, L, movegroupwindow"
+          "${mod}, H, movefocus, l"
+          "${mod}, L, movefocus, r"
+          "${mod}, K, movefocus, u"
+          "${mod}, J, movefocus, d"
+          "${mod} SHIFT, H, movewindoworgroup, l"
+          "${mod} SHIFT, L, movewindoworgroup, r"
+          "${mod} SHIFT, K, movewindoworgroup, u"
+          "${mod} SHIFT, J, movewindoworgroup, d"
         ]
         ++ (
           # workspaces

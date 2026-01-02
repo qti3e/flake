@@ -28,6 +28,9 @@
 
       kubectl
       clamav
+
+      zathura
+      nyxt
     ];
 
     sessionVariables = {
