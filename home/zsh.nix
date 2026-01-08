@@ -34,11 +34,12 @@
     history.size = 1000000;
     autocd = true;
 
-    shellAliases = with { ls_args = "--git --icons --group-directories-first"; }; {
+    shellAliases = with { ls_args = "--icons --group-directories-first"; }; {
       ls = "eza -lh ${ls_args}";
       la = "eza -lah ${ls_args}";
       l = "eza -lah ${ls_args}";
       lg = "eza -lah ${ls_args} --git-ignore";
+      lsg = "eza -lah ${ls_args} --git";  # git status column (slow on large repos)
       cat = "bat";
       cp = "cp -i"; # Confirm before overwriting something
       df = "df -h"; # Human-readable sizes

@@ -31,6 +31,8 @@
 
       zathura
       nyxt
+
+      chromium
     ];
 
     sessionVariables = {

@@ -328,6 +328,8 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       extraConfigLuaPre = ''
         vim.g.tlaplus_mappings_enable = false
         require("flatten").setup()
+        -- neoconf must be set up before lspconfig
+        require("neoconf").setup()
       '';
 
       extraConfigLua = ''
@@ -337,9 +339,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
               enabled = true,
               max_results = 8,
               min_chars = 3
-            },
-            cmp = {
-              enabled = true,
             },
           }
         })
@@ -515,6 +514,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
                 return default_diagnostic_handler(err, result, context, config)
             end
         end
+
       '';
 
       # Use experimental lua loader with jit cache
@@ -531,6 +531,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           flatten-nvim
           actions-preview-nvim
           nvim-treesitter-parsers.tlaplus
+          neoconf-nvim
         ]
         ++ [
           (pkgs.vimUtils.buildVimPlugin {
