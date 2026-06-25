@@ -4,16 +4,19 @@
 }:
 
 # Standalone neovim package
-inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
+inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
   inherit pkgs;
   module = {
     config = {
+      version.enableNixpkgsReleaseCheck = false;
+
       # ensure base neovim is used from pkgs
       package = pkgs.neovim;
 
       clipboard.providers.wl-copy.enable = true;
 
       opts = {
+        exrc = true; # Load .nvim.lua from project directories
         tabstop = 2;
         shiftwidth = 2;
         expandtab = true;
@@ -303,13 +306,12 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         }
       ];
 
-      diagnostics = {
+      diagnostic.settings = {
         severity_sort = true;
         float = {
           border = "rounded";
         };
         signs = {
-          # severity.min.__raw = "vim.diagnostic.severity.WARN";
           text = {
             "__rawKey__vim.diagnostic.severity.ERROR" = "󰅙";
             "__rawKey__vim.diagnostic.severity.WARN" = "";
@@ -366,87 +368,136 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             return false
           end))
 
-        require'nvim-treesitter.configs'.setup {
-          textobjects = {
-            select = {
-              enable = true,
-              -- Automatically jump forward to textobj, similar to targets.vim
-              lookahead = true,
-              keymaps = {
-                -- You can use the capture groups defined in textobjects.scm
-                ["af"] = "@function.outer",
-                ["if"] = "@function.inner",
-                ["ac"] = "@call.outer",
-                ["ic"] = "@call.inner",
-                ["al"] = "@loop.outer",
-                ["il"] = "@loop.inner",
-                ["ab"] = "@block.outer",
-                ["ib"] = "@block.inner",
-                ["ai"] = "@conditional.outer",
-                ["ii"] = "@conditional.inner",
-                ["aa"] = "@assignment.outer",
-                ["ia"] = "@assignment.inner",
-                -- upper case
-                ["aC"] = "@comment.outer",
-                ["iC"] = "@comment.inner",
-                ["aP"] = "@parameter.outer",
-                ["iP"] = "@parameter.inner",
-                -- t for trait because Rust
-                ["at"] = "@class.outer",
-                ["it"] = "@class.inner",
-                -- no inner
-                ["aS"] = "@statement.outer",
-              }
-            },
-            swap = {
-              enable = true,
-              swap_next = {
-                ["<leader>mp"] = "@parameter.inner",
-                ["<leader>mf"] = "@function.outer",
-                ["<leader>mb"] = "@block.outer",
-                ["<leader>mc"] = "@call.outer",
-                ["<leader>ml"] = "@loop.outer",
-                ["<leader>mi"] = "@conditional.outer",
-                ["<leader>ms"] = "@statement.outer",
-              },
-              swap_previous = {
-                ["<leader>mP"] = "@parameter.inner",
-                ["<leader>mF"] = "@function.outer",
-                ["<leader>mB"] = "@block.outer",
-                ["<leader>mC"] = "@call.outer",
-                ["<leader>mL"] = "@loop.outer",
-                ["<leader>mI"] = "@conditional.outer",
-                ["<leader>mS"] = "@statement.outer",
-              },
-            },
-            move = {
-              enable = true,
-              set_jumps = true,
-              goto_next = {
-                ["]m"] = "@function.outer",
-                ["]s"] = { query = { "@loop.outer", "@conditional.outer" } },
-                ["]p"] = "@parameter.inner",
-              },
-              goto_previous = {
-                ["[m"] = "@function.outer",
-                ["[s"] = { query = { "@loop.outer", "@conditional.outer" } },
-                ["[p"] = "@parameter.inner",
-              }
-            },
-          },
-        }
-        -- Repeat movement with ; and ,
-        -- ensure ; goes forward and , goes backward regardless of the last direction
-        local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
-        vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
-        vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
-
         require("actions-preview").setup()
         require('lsp_lines').toggle()
 
-        vim.cmd([[
-            hi Conceal guifg=#ff0000
-        ]])
+        -- :Mono command to switch to monochrome theme
+        vim.api.nvim_create_user_command('Mono', function()
+          local hl = vim.api.nvim_set_hl
+          -- Base UI
+          hl(0, 'Normal', { fg = '#ffffff', bg = '#000000' })
+          hl(0, 'NormalFloat', { fg = '#ffffff', bg = '#0a0a0a' })
+          hl(0, 'FloatBorder', { fg = '#444444', bg = '#0a0a0a' })
+          hl(0, 'CursorLine', { bg = '#111111' })
+          hl(0, 'CursorLineNr', { fg = '#ffffff', bold = true })
+          hl(0, 'LineNr', { fg = '#444444' })
+          hl(0, 'Visual', { bg = '#333333' })
+          hl(0, 'Search', { fg = '#000000', bg = '#ffffff' })
+          hl(0, 'IncSearch', { fg = '#000000', bg = '#ffffff' })
+          hl(0, 'Pmenu', { fg = '#ffffff', bg = '#111111' })
+          hl(0, 'PmenuSel', { fg = '#000000', bg = '#ffffff' })
+          hl(0, 'StatusLine', { fg = '#ffffff', bg = '#111111' })
+          hl(0, 'StatusLineNC', { fg = '#666666', bg = '#0a0a0a' })
+          hl(0, 'VertSplit', { fg = '#222222' })
+          hl(0, 'SignColumn', { bg = '#000000' })
+          -- Classic syntax groups
+          hl(0, 'Comment', { fg = '#666666', italic = false })
+          hl(0, 'Constant', { fg = '#ffffff' })
+          hl(0, 'String', { fg = '#ffffff' })
+          hl(0, 'Character', { fg = '#ffffff' })
+          hl(0, 'Number', { fg = '#ffffff' })
+          hl(0, 'Boolean', { fg = '#ffffff' })
+          hl(0, 'Float', { fg = '#ffffff' })
+          hl(0, 'Identifier', { fg = '#ffffff' })
+          hl(0, 'Function', { fg = '#ffffff' })
+          hl(0, 'Statement', { fg = '#ffffff' })
+          hl(0, 'Conditional', { fg = '#ffffff' })
+          hl(0, 'Repeat', { fg = '#ffffff' })
+          hl(0, 'Label', { fg = '#ffffff' })
+          hl(0, 'Operator', { fg = '#ffffff' })
+          hl(0, 'Keyword', { fg = '#ffffff' })
+          hl(0, 'Exception', { fg = '#ffffff' })
+          hl(0, 'PreProc', { fg = '#ffffff' })
+          hl(0, 'Include', { fg = '#ffffff' })
+          hl(0, 'Define', { fg = '#ffffff' })
+          hl(0, 'Macro', { fg = '#ffffff' })
+          hl(0, 'PreCondit', { fg = '#ffffff' })
+          hl(0, 'Type', { fg = '#ffffff' })
+          hl(0, 'StorageClass', { fg = '#ffffff' })
+          hl(0, 'Structure', { fg = '#ffffff' })
+          hl(0, 'Typedef', { fg = '#ffffff' })
+          hl(0, 'Special', { fg = '#ffffff' })
+          hl(0, 'SpecialChar', { fg = '#ffffff' })
+          hl(0, 'Tag', { fg = '#ffffff' })
+          hl(0, 'Delimiter', { fg = '#ffffff' })
+          hl(0, 'SpecialComment', { fg = '#666666' })
+          hl(0, 'Debug', { fg = '#ffffff' })
+          -- Treesitter groups
+          hl(0, '@variable', { fg = '#ffffff' })
+          hl(0, '@variable.builtin', { fg = '#ffffff' })
+          hl(0, '@variable.parameter', { fg = '#ffffff' })
+          hl(0, '@variable.member', { fg = '#ffffff' })
+          hl(0, '@constant', { fg = '#ffffff' })
+          hl(0, '@constant.builtin', { fg = '#ffffff' })
+          hl(0, '@constant.macro', { fg = '#ffffff' })
+          hl(0, '@module', { fg = '#ffffff' })
+          hl(0, '@label', { fg = '#ffffff' })
+          hl(0, '@string', { fg = '#ffffff' })
+          hl(0, '@string.escape', { fg = '#ffffff' })
+          hl(0, '@string.special', { fg = '#ffffff' })
+          hl(0, '@character', { fg = '#ffffff' })
+          hl(0, '@character.special', { fg = '#ffffff' })
+          hl(0, '@boolean', { fg = '#ffffff' })
+          hl(0, '@number', { fg = '#ffffff' })
+          hl(0, '@number.float', { fg = '#ffffff' })
+          hl(0, '@type', { fg = '#ffffff' })
+          hl(0, '@type.builtin', { fg = '#ffffff' })
+          hl(0, '@type.definition', { fg = '#ffffff' })
+          hl(0, '@type.qualifier', { fg = '#ffffff' })
+          hl(0, '@attribute', { fg = '#ffffff' })
+          hl(0, '@property', { fg = '#ffffff' })
+          hl(0, '@function', { fg = '#ffffff' })
+          hl(0, '@function.builtin', { fg = '#ffffff' })
+          hl(0, '@function.macro', { fg = '#ffffff' })
+          hl(0, '@function.method', { fg = '#ffffff' })
+          hl(0, '@constructor', { fg = '#ffffff' })
+          hl(0, '@operator', { fg = '#ffffff' })
+          hl(0, '@keyword', { fg = '#ffffff' })
+          hl(0, '@keyword.function', { fg = '#ffffff' })
+          hl(0, '@keyword.operator', { fg = '#ffffff' })
+          hl(0, '@keyword.import', { fg = '#ffffff' })
+          hl(0, '@keyword.storage', { fg = '#ffffff' })
+          hl(0, '@keyword.repeat', { fg = '#ffffff' })
+          hl(0, '@keyword.return', { fg = '#ffffff' })
+          hl(0, '@keyword.debug', { fg = '#ffffff' })
+          hl(0, '@keyword.exception', { fg = '#ffffff' })
+          hl(0, '@keyword.conditional', { fg = '#ffffff' })
+          hl(0, '@keyword.directive', { fg = '#ffffff' })
+          hl(0, '@punctuation', { fg = '#ffffff' })
+          hl(0, '@punctuation.delimiter', { fg = '#ffffff' })
+          hl(0, '@punctuation.bracket', { fg = '#ffffff' })
+          hl(0, '@punctuation.special', { fg = '#ffffff' })
+          hl(0, '@comment', { fg = '#666666', italic = false })
+          hl(0, '@tag', { fg = '#ffffff' })
+          hl(0, '@tag.attribute', { fg = '#ffffff' })
+          hl(0, '@tag.delimiter', { fg = '#ffffff' })
+          -- Diagnostics
+          hl(0, 'DiagnosticError', { fg = '#ff6666' })
+          hl(0, 'DiagnosticWarn', { fg = '#ffcc66' })
+          hl(0, 'DiagnosticInfo', { fg = '#6699ff' })
+          hl(0, 'DiagnosticHint', { fg = '#666666' })
+          -- Git signs
+          hl(0, 'GitSignsAdd', { fg = '#666666' })
+          hl(0, 'GitSignsChange', { fg = '#666666' })
+          hl(0, 'GitSignsDelete', { fg = '#666666' })
+          -- LSP
+          hl(0, 'LspInlayHint', { fg = '#444444' })
+          hl(0, '@lsp.type.class', { fg = '#ffffff' })
+          hl(0, '@lsp.type.decorator', { fg = '#ffffff' })
+          hl(0, '@lsp.type.enum', { fg = '#ffffff' })
+          hl(0, '@lsp.type.enumMember', { fg = '#ffffff' })
+          hl(0, '@lsp.type.function', { fg = '#ffffff' })
+          hl(0, '@lsp.type.interface', { fg = '#ffffff' })
+          hl(0, '@lsp.type.macro', { fg = '#ffffff' })
+          hl(0, '@lsp.type.method', { fg = '#ffffff' })
+          hl(0, '@lsp.type.namespace', { fg = '#ffffff' })
+          hl(0, '@lsp.type.parameter', { fg = '#ffffff' })
+          hl(0, '@lsp.type.property', { fg = '#ffffff' })
+          hl(0, '@lsp.type.struct', { fg = '#ffffff' })
+          hl(0, '@lsp.type.type', { fg = '#ffffff' })
+          hl(0, '@lsp.type.typeParameter', { fg = '#ffffff' })
+          hl(0, '@lsp.type.variable', { fg = '#ffffff' })
+        end, {})
 
         local function virtual_text_document(params)
           local bufnr = params.buf
@@ -517,17 +568,43 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
       '';
 
+      # Default colorscheme
+      colorschemes.catppuccin = {
+        enable = true;
+        settings = {
+          flavour = "mocha";
+          show_end_of_buffer = false;
+          integrations = {
+            mini.enabled = true;
+            lsp_trouble = true;
+            treesitter = true;
+            gitsigns = true;
+            fidget = true;
+          };
+        };
+      };
+
       # Use experimental lua loader with jit cache
       luaLoader.enable = true;
       performance.combinePlugins.enable = true;
-      performance.combinePlugins.standalonePlugins = [
-        "vimplugin-nvim-treesitter-textobjects"
-      ];
+      performance.combinePlugins.standalonePlugins = [ ];
       match.ExtraWhitespace = "\\s\\+$";
 
       extraPlugins =
         with pkgs.vimPlugins;
         [
+          # Additional colorschemes (switch with :colorscheme <name>)
+          tokyonight-nvim
+          gruvbox-nvim
+          kanagawa-nvim
+          rose-pine
+          nord-nvim
+          onedark-nvim
+          nightfox-nvim
+          everforest
+          dracula-nvim
+
+          # Utility plugins
           flatten-nvim
           actions-preview-nvim
           nvim-treesitter-parsers.tlaplus
@@ -535,17 +612,8 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         ]
         ++ [
           (pkgs.vimUtils.buildVimPlugin {
-            name = "nvim-treesitter-textobjects";
-            src = pkgs.fetchFromGitHub {
-              owner = "nvim-treesitter";
-              repo = "nvim-treesitter-textobjects";
-              rev = "9937e5e356e5b227ec56d83d0a9d0a0f6bc9cad4";
-              hash = "sha256-2i2HrJLJvx2HwPua/wcJpuF3nlvNf/VzNq2PlsbfHdM=";
-            };
-          })
-
-          (pkgs.vimUtils.buildVimPlugin {
             name = "crates.nvim";
+            doCheck = false; # null-ls module removed
             src = pkgs.fetchFromGitHub {
               owner = "saecki";
               repo = "crates.nvim";
@@ -594,6 +662,86 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
         web-devicons.enable = true;
         lsp-format.enable = true;
         treesitter.enable = true;
+        treesitter-textobjects = {
+          enable = true;
+          settings = {
+
+            select = {
+              enable = true;
+              lookahead = true;
+              keymaps = {
+                "af" = "@function.outer";
+                "if" = "@function.inner";
+                "ac" = "@call.outer";
+                "ic" = "@call.inner";
+                "as" = "@statement.outer";
+                "aa" = "@assignment.outer";
+                "ia" = "@assignment.inner";
+                "ab" = "@block.outer";
+                "ib" = "@block.inner";
+                "ai" = "@conditional.outer";
+                "ii" = "@conditional.inner";
+                "al" = "@loop.outer";
+                "il" = "@loop.inner";
+                "ap" = "@parameter.outer";
+                "ip" = "@parameter.inner";
+                "at" = "@class.outer";
+                "it" = "@class.inner";
+              };
+            };
+            swap = {
+              enable = true;
+              swapNext = {
+                "Mf" = "@function.outer";
+                "Mc" = "@call.outer";
+                "Ms" = "@statement.outer";
+                "Ma" = "@assignment.outer";
+                "Mb" = "@block.outer";
+                "Mi" = "@conditional.outer";
+                "Ml" = "@loop.outer";
+                "Mp" = "@parameter.inner";
+                "Mt" = "@class.outer";
+              };
+              swapPrevious = {
+                "MF" = "@function.outer";
+                "MC" = "@call.outer";
+                "MS" = "@statement.outer";
+                "MA" = "@assignment.outer";
+                "MB" = "@block.outer";
+                "MI" = "@conditional.outer";
+                "ML" = "@loop.outer";
+                "MP" = "@parameter.inner";
+                "MT" = "@class.outer";
+              };
+            };
+            move = {
+              enable = true;
+              setJumps = true;
+              gotoNextStart = {
+                "]f" = "@function.outer";
+                "]c" = "@call.outer";
+                "]s" = "@statement.outer";
+                "]a" = "@assignment.outer";
+                "]b" = "@block.outer";
+                "]i" = "@conditional.outer";
+                "]l" = "@loop.outer";
+                "]p" = "@parameter.inner";
+                "]t" = "@class.outer";
+              };
+              gotoPreviousStart = {
+                "[f" = "@function.outer";
+                "[c" = "@call.outer";
+                "[s" = "@statement.outer";
+                "[a" = "@assignment.outer";
+                "[b" = "@block.outer";
+                "[i" = "@conditional.outer";
+                "[l" = "@loop.outer";
+                "[p" = "@parameter.inner";
+                "[t" = "@class.outer";
+              };
+            };
+          };
+        };
         lsp-lines.enable = true;
         commentary.enable = true;
         wakatime.enable = true;
@@ -630,7 +778,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             separator = "⸻";
             max_lines = 10;
             trim_scope = "inner";
-            min_window_height = 40;
+            min_window_height = 0;
           };
         };
 
@@ -661,7 +809,7 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
           servers = {
             nil_ls = {
               enable = true;
-              settings.formatting.command = [ "${pkgs.nixfmt-rfc-style}/bin/nixfmt" ];
+              settings.formatting.command = [ "${pkgs.nixfmt}/bin/nixfmt" ];
             };
             lua_ls.enable = true;
             denols = {
@@ -704,23 +852,25 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
 
         fidget = {
           enable = true;
-          progress = {
-            display = {
-              progressIcon = {
-                pattern = "flip";
-                period = 1;
-              };
-              overrides = {
-                rust_analyzer = {
-                  name = "rust analyzer";
+          settings = {
+            progress = {
+              display = {
+                progress_icon = {
+                  pattern = "flip";
+                  period = 1;
+                };
+                overrides = {
+                  rust_analyzer = {
+                    name = "rust analyzer";
+                  };
                 };
               };
             };
-          };
-          notification = {
-            window = {
-              winblend = 0;
-              xPadding = 2;
+            notification = {
+              window = {
+                winblend = 0;
+                x_padding = 2;
+              };
             };
           };
         };
@@ -791,134 +941,6 @@ inputs.nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             };
             bracketed = { };
           };
-        };
-      };
-
-      highlightOverride = {
-        # Base UI
-        Normal = {
-          fg = "#ffffff";
-          bg = "#000000";
-        };
-        NormalFloat = {
-          fg = "#ffffff";
-          bg = "#0a0a0a";
-        };
-        FloatBorder = {
-          fg = "#444444";
-          bg = "#0a0a0a";
-        };
-        CursorLine = {
-          bg = "#111111";
-        };
-        CursorLineNr = {
-          fg = "#ffffff";
-          bold = true;
-        };
-        LineNr = {
-          fg = "#444444";
-        };
-        Visual = {
-          bg = "#333333";
-        };
-        Search = {
-          fg = "#000000";
-          bg = "#ffffff";
-        };
-        IncSearch = {
-          fg = "#000000";
-          bg = "#ffffff";
-        };
-        Pmenu = {
-          fg = "#ffffff";
-          bg = "#111111";
-        };
-        PmenuSel = {
-          fg = "#000000";
-          bg = "#ffffff";
-        };
-        StatusLine = {
-          fg = "#ffffff";
-          bg = "#111111";
-        };
-        StatusLineNC = {
-          fg = "#666666";
-          bg = "#0a0a0a";
-        };
-        VertSplit = {
-          fg = "#222222";
-        };
-        SignColumn = {
-          bg = "#000000";
-        };
-
-        # Syntax - all white
-        Comment = {
-          fg = "#666666";
-          italic = false;
-        };
-        Constant = {
-          fg = "#ffffff";
-        };
-        String = {
-          fg = "#ffffff";
-        };
-        Identifier = {
-          fg = "#ffffff";
-        };
-        Function = {
-          fg = "#ffffff";
-        };
-        Statement = {
-          fg = "#ffffff";
-        };
-        Operator = {
-          fg = "#ffffff";
-        };
-        Keyword = {
-          fg = "#ffffff";
-        };
-        Type = {
-          fg = "#ffffff";
-        };
-        Special = {
-          fg = "#ffffff";
-        };
-        PreProc = {
-          fg = "#ffffff";
-        };
-        Delimiter = {
-          fg = "#ffffff";
-        };
-
-        # Diagnostics
-        DiagnosticError = {
-          fg = "#ff6666";
-        };
-        DiagnosticWarn = {
-          fg = "#ffcc66";
-        };
-        DiagnosticInfo = {
-          fg = "#6699ff";
-        };
-        DiagnosticHint = {
-          fg = "#666666";
-        };
-
-        # Git signs
-        GitSignsAdd = {
-          fg = "#666666";
-        };
-        GitSignsChange = {
-          fg = "#666666";
-        };
-        GitSignsDelete = {
-          fg = "#666666";
-        };
-
-        # LSP
-        LspInlayHint = {
-          fg = "#444444";
         };
       };
 
