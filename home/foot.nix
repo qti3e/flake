@@ -4,13 +4,14 @@
     enable = true;
     settings = {
       main = {
-        # font = "Monaspacekrypton-Light:size=9, Symbols Nerd Font";
-        font = "MonaspaceXenon:size=8, Symbols Nerd Font";
+        font = "Monaspacekrypton-Light:size=9, Symbols Nerd Font";
+        # font = "MonaspaceXenon:size=8, Symbols Nerd Font";
+        # font = "MonaspaceKrypton:size=7, Symbols Nerd Font";
         dpi-aware = "yes";
         pad = "0x0 center";
         term = "xterm-256color";
       };
-      colors = {
+      colors-dark = {
         # "background" = "192330";
         "background" = "000000";
         "foreground" = "d6d6d7";

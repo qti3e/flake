@@ -22,15 +22,20 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # hyprland {
-    #   url = "github:vaxry/hyprland";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    xdph = {
+      url = "github:hyprwm/xdg-desktop-portal-hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
-    extra-substituters = [ "https://cache.garnix.io" ];
-    extra-trusted-public-keys = [ "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" ];
+    # RIP
+    # extra-substituters = [ "https://cache.garnix.io" ];
+    # extra-trusted-public-keys = [ "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" ];
 
     # Fast offline failure
     fallback = false;
@@ -69,8 +74,10 @@
 
             (final: prev: {
               # Force insert flake packages that dont have builtin overlays.
-              ags = inputs.ags.packages.${prev.system}.default;
-              # wezterm = inputs.wezterm.packages.${prev.system}.default;
+              ags = inputs.ags.packages.${prev.stdenv.hostPlatform.system}.default;
+              # wezterm = inputs.wezterm.packages.${prev.stdenv.hostPlatform.system}.default;
+              xdg-desktop-portal-hyprland = inputs.xdph.packages.${prev.stdenv.hostPlatform.system}.default;
+              hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.default;
             })
           ];
           config.allowUnfree = true;
@@ -131,6 +138,6 @@
       });
 
       # `nix fmt`
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
+      formatter = forAllSystems (pkgs: pkgs.nixfmt);
     };
 }

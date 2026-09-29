@@ -1,14 +1,14 @@
 {
     "autoUpdate": true,
     "autoUpdateNotification": true,
-    "useQuickCss": false,
+    "useQuickCss": true,
     "themeLinks": [],
     "enabledThemes": [
-        "carburetor-regular.css",
-        "horizontal.css"
+        "horizontal.css",
+        "carburetor-regular.css"
     ],
     "enableReactDevtools": false,
-    "frameless": false,
+    "frameless": true,
     "transparent": false,
     "winCtrlQ": false,
     "disableMinSize": false,
@@ -95,7 +95,8 @@
         },
         "BetterSessions": {
             "enabled": true,
-            "backgroundCheck": false
+            "backgroundCheck": false,
+            "checkInterval": 20
         },
         "BetterSettings": {
             "enabled": false,
@@ -171,9 +172,6 @@
         "DontRoundMyTimestamps": {
             "enabled": false
         },
-        "EmoteCloner": {
-            "enabled": false
-        },
         "Experiments": {
             "enabled": false
         },
@@ -217,9 +215,6 @@
             "enabled": false
         },
         "GreetStickerPicker": {
-            "enabled": false
-        },
-        "HideAttachments": {
             "enabled": false
         },
         "iLoveSpam": {
@@ -284,9 +279,6 @@
             "ignoreUsers": "",
             "ignoreChannels": "",
             "ignoreGuilds": ""
-        },
-        "MessageTags": {
-            "enabled": false
         },
         "MoreCommands": {
             "enabled": false
@@ -488,7 +480,7 @@
             "enabled": false
         },
         "ShikiCodeblocks": {
-            "enabled": true,
+            "enabled": false,
             "theme": "https://raw.githubusercontent.com/shikijs/shiki/0b28ad8ccfbf2615f2d9d38ea8255416b8ac3043/packages/shiki/themes/css-variables.json",
             "tryHljs": "ALWAYS",
             "useDevIcon": "COLOR",
@@ -613,7 +605,7 @@
             "enabled": true
         },
         "WhoReacted": {
-            "enabled": true
+            "enabled": false
         },
         "XSOverlay": {
             "enabled": false
@@ -644,6 +636,57 @@
         },
         "YoutubeAdblock": {
             "enabled": false
+        },
+        "DynamicImageModalAPI": {
+            "enabled": false
+        },
+        "AccountPanelServerProfile": {
+            "enabled": false
+        },
+        "CopyFileContents": {
+            "enabled": false
+        },
+        "FixImagesQuality": {
+            "enabled": false
+        },
+        "NoMaskedUrlPaste": {
+            "enabled": false
+        },
+        "StickerPaste": {
+            "enabled": false
+        },
+        "VolumeBooster": {
+            "enabled": false
+        },
+        "HideMedia": {
+            "enabled": false
+        },
+        "ExpressionCloner": {
+            "enabled": true
+        },
+        "CopyStickerLinks": {
+            "enabled": false
+        },
+        "FullUserInChatbox": {
+            "enabled": false
+        },
+        "ImageFilename": {
+            "enabled": false
+        },
+        "IrcColors": {
+            "enabled": false
+        },
+        "BadgeAPI": {
+            "enabled": true
+        },
+        "DisableDeepLinks": {
+            "enabled": true
+        },
+        "MoreQuickReactions": {
+            "enabled": false
+        },
+        "CustomCommands": {
+            "enabled": false
         }
     },
     "notifications": {
@@ -656,6 +699,11 @@
         "authenticated": false,
         "url": "https://api.vencord.dev/",
         "settingsSync": false,
-        "settingsSyncVersion": 1730844946349
+        "settingsSyncVersion": 1781025344439
+    },
+    "eagerPatches": false,
+    "uiElements": {
+        "chatBarButtons": {},
+        "messagePopoverButtons": {}
     }
 }

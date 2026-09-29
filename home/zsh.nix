@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   config,
   flakeDirectory,
   ...
@@ -64,7 +65,7 @@
     sessionVariables = {
       # Let's break up words more
       WORDCHARS = "*?[]~=&;!#$%^(){}<>";
-      PATH = "$HOME/.deno/bin:$PATH";
+      PATH = "$HOME/.deno/bin:$HOME/.local/bin:$PATH";
       DENO_UNSTABLE_NPM_LAZY_CACHING = "1";
     };
 
@@ -89,84 +90,85 @@
       }
     ];
 
-    initExtraFirst = ''
-      fpath=("$HOME/.zsh/completions" $fpath)
+    initContent = lib.mkMerge [
+      (lib.mkBefore ''
+        fpath=("$HOME/.zsh/completions" $fpath)
 
-      ## Options section
-      setopt correct                                                  # Auto correct mistakes
-      setopt extendedglob                                             # Extended globbing. Allows using regular expressions with *
-      setopt nocaseglob                                               # Case insensitive globbing
-      setopt rcexpandparam                                            # Array expension with parameters
-      setopt nocheckjobs                                              # Don't warn about running processes when exiting
-      setopt numericglobsort                                          # Sort filenames numerically when it makes sense
-      setopt appendhistory                                            # Immediately append history instead of overwriting
-      setopt histignorealldups                                        # If a new command is a duplicate, remove the older one
-      setopt autocd                                                   # if only directory path is entered, cd there.
-      setopt inc_append_history                                       # save commands are added to the history immediately, otherwise only when shell exits.
-      setopt histignorespace                                          # Don't save commands that start with space
+        ## Options section
+        setopt correct                                                  # Auto correct mistakes
+        setopt extendedglob                                             # Extended globbing. Allows using regular expressions with *
+        setopt nocaseglob                                               # Case insensitive globbing
+        setopt rcexpandparam                                            # Array expension with parameters
+        setopt nocheckjobs                                              # Don't warn about running processes when exiting
+        setopt numericglobsort                                          # Sort filenames numerically when it makes sense
+        setopt appendhistory                                            # Immediately append history instead of overwriting
+        setopt histignorealldups                                        # If a new command is a duplicate, remove the older one
+        setopt autocd                                                   # if only directory path is entered, cd there.
+        setopt inc_append_history                                       # save commands are added to the history immediately, otherwise only when shell exits.
+        setopt histignorespace                                          # Don't save commands that start with space
 
-      # completion options
-      zstyle ':completion:*' use-cache on
-      zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
-      zstyle ':completion:*' menu select
-      zstyle ':completion:*' completer _extensions _complete _approximate
-      zstyle ':completion:*' file-list all                            # Detailed List of Files and Folders
-      zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
-      zstyle ':completion:*' list-colors "''${(s.:.)LS_COLORS}"       # Colored completion (different colors for dirs/files/etc)
-      zstyle ':completion:*' rehash true                              # automatically find new executables in path
-      zstyle ':completion::complete:*' gain-privileges 1
-      zstyle -e ':autocomplete:*:*' list-lines 'reply=( $(( LINES / 3 )) )'
-      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'  										  # make autosuggest a little brighter
-    '';
+        # completion options
+        zstyle ':completion:*' use-cache on
+        zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
+        zstyle ':completion:*' menu select
+        zstyle ':completion:*' completer _extensions _complete _approximate
+        zstyle ':completion:*' file-list all                            # Detailed List of Files and Folders
+        zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
+        zstyle ':completion:*' list-colors "''${(s.:.)LS_COLORS}"       # Colored completion (different colors for dirs/files/etc)
+        zstyle ':completion:*' rehash true                              # automatically find new executables in path
+        zstyle ':completion::complete:*' gain-privileges 1
+        zstyle -e ':autocomplete:*:*' list-lines 'reply=( $(( LINES / 3 )) )'
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'  										  # make autosuggest a little brighter
+      '')
+      ''
+        # nixpkg command to run a package in a nix-shell
+        function nixpkgs() {
+          NIXPKGS_ALLOW_UNFREE=1 nix shell "''${@/#/nixpkgs#}"
+        }
 
-    initExtra = ''
-      # nixpkg command to run a package in a nix-shell
-      function nixpkgs() {
-        NIXPKGS_ALLOW_UNFREE=1 nix shell "''${@/#/nixpkgs#}"
-      }
+        function nixpkg() {
+          PKG="$1"; shift
+          NIXPKGS_ALLOW_UNFREE=1 nix run "nixpkgs#$PKG" -- $@
+        }
 
-      function nixpkg() {
-        PKG="$1"; shift
-        NIXPKGS_ALLOW_UNFREE=1 nix run "nixpkgs#$PKG" -- $@
-      }
+        # foot integration
+        function osc7-pwd() {
+            emulate -L zsh # also sets localoptions for us
+            setopt extendedglob
+            local LC_ALL=C
+            printf '\e]7;file://%s%s\e\' $HOST ''${PWD//(#m)([^@-Za-z&-;_~])/%''${(l:2::0:)$(([##16]#MATCH))}}
+        }
 
-      # foot integration
-      function osc7-pwd() {
-          emulate -L zsh # also sets localoptions for us
-          setopt extendedglob
-          local LC_ALL=C
-          printf '\e]7;file://%s%s\e\' $HOST ''${PWD//(#m)([^@-Za-z&-;_~])/%''${(l:2::0:)$(([##16]#MATCH))}}
-      }
+        function chpwd-osc7-pwd() {
+            (( ZSH_SUBSHELL )) || osc7-pwd
+        }
 
-      function chpwd-osc7-pwd() {
-          (( ZSH_SUBSHELL )) || osc7-pwd
-      }
+        add-zsh-hook -Uz chpwd chpwd-osc7-pwd
 
-      add-zsh-hook -Uz chpwd chpwd-osc7-pwd
-
-      source ${config.lib.file.mkOutOfStoreSymlink flakeDirectory + "/home/zsh/fzf.sh"}
+        source ${config.lib.file.mkOutOfStoreSymlink flakeDirectory + "/home/zsh/fzf.sh"}
 
 
-      bindkey '^K' history-beginning-search-backward
-      bindkey '^J' history-beginning-search-forward
-      bindkey '^A' beginning-of-line
-      bindkey '^E' end-of-line
-      bindkey '^ ' autosuggest-accept
-      bindkey '^W' backward-kill-word
-      bindkey '^U' backward-kill-line   # delete to start
-      bindkey '^Y' yank                 # paste
-      bindkey '^.' insert-last-word
+        bindkey '^K' history-beginning-search-backward
+        bindkey '^J' history-beginning-search-forward
+        bindkey '^A' beginning-of-line
+        bindkey '^E' end-of-line
+        bindkey '^ ' autosuggest-accept
+        bindkey '^W' backward-kill-word
+        bindkey '^U' backward-kill-line   # delete to start
+        bindkey '^Y' yank                 # paste
+        bindkey '^.' insert-last-word
 
-      bindkey '^b' backward-word       # Alt+b
-      bindkey '^f' forward-word        # Alt+f
-      bindkey '^x' kill-word
+        bindkey '^b' backward-word       # Alt+b
+        bindkey '^f' forward-word        # Alt+f
+        bindkey '^x' kill-word
 
-      bindkey -v
-      export KEYTIMEOUT=1
+        bindkey -v
+        export KEYTIMEOUT=1
 
-      # vi normal mode extras
-      bindkey -M vicmd 'H' beginning-of-line
-      bindkey -M vicmd 'L' end-of-line
-    '';
+        # vi normal mode extras
+        bindkey -M vicmd 'H' beginning-of-line
+        bindkey -M vicmd 'L' end-of-line
+      ''
+    ];
   };
 }

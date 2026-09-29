@@ -11,6 +11,6 @@ pkgs.xq.overrideAttrs (old: rec {
   };
   cargoDeps = old.cargoDeps.overrideAttrs (_: {
     inherit src;
-    outputHash = "sha256-eHJDtr3sy3WQUYaVEkrssVtEOGZCAX9/VwxP16RtglU=";
+    outputHash = "sha256-LTpf4HoKz6vAFnofipGXOaHjndsSOXmOUqsbaZ8bcoI=";
   });
 })

@@ -335,6 +335,12 @@ inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithMo
       '';
 
       extraConfigLua = ''
+        require('lean').setup({
+          infoview = {
+            autoopen = true
+          },
+        })
+
         require('crates').setup({
           completion = {
             crates = {
@@ -373,130 +379,12 @@ inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithMo
 
         -- :Mono command to switch to monochrome theme
         vim.api.nvim_create_user_command('Mono', function()
-          local hl = vim.api.nvim_set_hl
-          -- Base UI
-          hl(0, 'Normal', { fg = '#ffffff', bg = '#000000' })
-          hl(0, 'NormalFloat', { fg = '#ffffff', bg = '#0a0a0a' })
-          hl(0, 'FloatBorder', { fg = '#444444', bg = '#0a0a0a' })
-          hl(0, 'CursorLine', { bg = '#111111' })
-          hl(0, 'CursorLineNr', { fg = '#ffffff', bold = true })
-          hl(0, 'LineNr', { fg = '#444444' })
-          hl(0, 'Visual', { bg = '#333333' })
-          hl(0, 'Search', { fg = '#000000', bg = '#ffffff' })
-          hl(0, 'IncSearch', { fg = '#000000', bg = '#ffffff' })
-          hl(0, 'Pmenu', { fg = '#ffffff', bg = '#111111' })
-          hl(0, 'PmenuSel', { fg = '#000000', bg = '#ffffff' })
-          hl(0, 'StatusLine', { fg = '#ffffff', bg = '#111111' })
-          hl(0, 'StatusLineNC', { fg = '#666666', bg = '#0a0a0a' })
-          hl(0, 'VertSplit', { fg = '#222222' })
-          hl(0, 'SignColumn', { bg = '#000000' })
-          -- Classic syntax groups
-          hl(0, 'Comment', { fg = '#666666', italic = false })
-          hl(0, 'Constant', { fg = '#ffffff' })
-          hl(0, 'String', { fg = '#ffffff' })
-          hl(0, 'Character', { fg = '#ffffff' })
-          hl(0, 'Number', { fg = '#ffffff' })
-          hl(0, 'Boolean', { fg = '#ffffff' })
-          hl(0, 'Float', { fg = '#ffffff' })
-          hl(0, 'Identifier', { fg = '#ffffff' })
-          hl(0, 'Function', { fg = '#ffffff' })
-          hl(0, 'Statement', { fg = '#ffffff' })
-          hl(0, 'Conditional', { fg = '#ffffff' })
-          hl(0, 'Repeat', { fg = '#ffffff' })
-          hl(0, 'Label', { fg = '#ffffff' })
-          hl(0, 'Operator', { fg = '#ffffff' })
-          hl(0, 'Keyword', { fg = '#ffffff' })
-          hl(0, 'Exception', { fg = '#ffffff' })
-          hl(0, 'PreProc', { fg = '#ffffff' })
-          hl(0, 'Include', { fg = '#ffffff' })
-          hl(0, 'Define', { fg = '#ffffff' })
-          hl(0, 'Macro', { fg = '#ffffff' })
-          hl(0, 'PreCondit', { fg = '#ffffff' })
-          hl(0, 'Type', { fg = '#ffffff' })
-          hl(0, 'StorageClass', { fg = '#ffffff' })
-          hl(0, 'Structure', { fg = '#ffffff' })
-          hl(0, 'Typedef', { fg = '#ffffff' })
-          hl(0, 'Special', { fg = '#ffffff' })
-          hl(0, 'SpecialChar', { fg = '#ffffff' })
-          hl(0, 'Tag', { fg = '#ffffff' })
-          hl(0, 'Delimiter', { fg = '#ffffff' })
-          hl(0, 'SpecialComment', { fg = '#666666' })
-          hl(0, 'Debug', { fg = '#ffffff' })
-          -- Treesitter groups
-          hl(0, '@variable', { fg = '#ffffff' })
-          hl(0, '@variable.builtin', { fg = '#ffffff' })
-          hl(0, '@variable.parameter', { fg = '#ffffff' })
-          hl(0, '@variable.member', { fg = '#ffffff' })
-          hl(0, '@constant', { fg = '#ffffff' })
-          hl(0, '@constant.builtin', { fg = '#ffffff' })
-          hl(0, '@constant.macro', { fg = '#ffffff' })
-          hl(0, '@module', { fg = '#ffffff' })
-          hl(0, '@label', { fg = '#ffffff' })
-          hl(0, '@string', { fg = '#ffffff' })
-          hl(0, '@string.escape', { fg = '#ffffff' })
-          hl(0, '@string.special', { fg = '#ffffff' })
-          hl(0, '@character', { fg = '#ffffff' })
-          hl(0, '@character.special', { fg = '#ffffff' })
-          hl(0, '@boolean', { fg = '#ffffff' })
-          hl(0, '@number', { fg = '#ffffff' })
-          hl(0, '@number.float', { fg = '#ffffff' })
-          hl(0, '@type', { fg = '#ffffff' })
-          hl(0, '@type.builtin', { fg = '#ffffff' })
-          hl(0, '@type.definition', { fg = '#ffffff' })
-          hl(0, '@type.qualifier', { fg = '#ffffff' })
-          hl(0, '@attribute', { fg = '#ffffff' })
-          hl(0, '@property', { fg = '#ffffff' })
-          hl(0, '@function', { fg = '#ffffff' })
-          hl(0, '@function.builtin', { fg = '#ffffff' })
-          hl(0, '@function.macro', { fg = '#ffffff' })
-          hl(0, '@function.method', { fg = '#ffffff' })
-          hl(0, '@constructor', { fg = '#ffffff' })
-          hl(0, '@operator', { fg = '#ffffff' })
-          hl(0, '@keyword', { fg = '#ffffff' })
-          hl(0, '@keyword.function', { fg = '#ffffff' })
-          hl(0, '@keyword.operator', { fg = '#ffffff' })
-          hl(0, '@keyword.import', { fg = '#ffffff' })
-          hl(0, '@keyword.storage', { fg = '#ffffff' })
-          hl(0, '@keyword.repeat', { fg = '#ffffff' })
-          hl(0, '@keyword.return', { fg = '#ffffff' })
-          hl(0, '@keyword.debug', { fg = '#ffffff' })
-          hl(0, '@keyword.exception', { fg = '#ffffff' })
-          hl(0, '@keyword.conditional', { fg = '#ffffff' })
-          hl(0, '@keyword.directive', { fg = '#ffffff' })
-          hl(0, '@punctuation', { fg = '#ffffff' })
-          hl(0, '@punctuation.delimiter', { fg = '#ffffff' })
-          hl(0, '@punctuation.bracket', { fg = '#ffffff' })
-          hl(0, '@punctuation.special', { fg = '#ffffff' })
-          hl(0, '@comment', { fg = '#666666', italic = false })
-          hl(0, '@tag', { fg = '#ffffff' })
-          hl(0, '@tag.attribute', { fg = '#ffffff' })
-          hl(0, '@tag.delimiter', { fg = '#ffffff' })
-          -- Diagnostics
-          hl(0, 'DiagnosticError', { fg = '#ff6666' })
-          hl(0, 'DiagnosticWarn', { fg = '#ffcc66' })
-          hl(0, 'DiagnosticInfo', { fg = '#6699ff' })
-          hl(0, 'DiagnosticHint', { fg = '#666666' })
-          -- Git signs
-          hl(0, 'GitSignsAdd', { fg = '#666666' })
-          hl(0, 'GitSignsChange', { fg = '#666666' })
-          hl(0, 'GitSignsDelete', { fg = '#666666' })
-          -- LSP
-          hl(0, 'LspInlayHint', { fg = '#444444' })
-          hl(0, '@lsp.type.class', { fg = '#ffffff' })
-          hl(0, '@lsp.type.decorator', { fg = '#ffffff' })
-          hl(0, '@lsp.type.enum', { fg = '#ffffff' })
-          hl(0, '@lsp.type.enumMember', { fg = '#ffffff' })
-          hl(0, '@lsp.type.function', { fg = '#ffffff' })
-          hl(0, '@lsp.type.interface', { fg = '#ffffff' })
-          hl(0, '@lsp.type.macro', { fg = '#ffffff' })
-          hl(0, '@lsp.type.method', { fg = '#ffffff' })
-          hl(0, '@lsp.type.namespace', { fg = '#ffffff' })
-          hl(0, '@lsp.type.parameter', { fg = '#ffffff' })
-          hl(0, '@lsp.type.property', { fg = '#ffffff' })
-          hl(0, '@lsp.type.struct', { fg = '#ffffff' })
-          hl(0, '@lsp.type.type', { fg = '#ffffff' })
-          hl(0, '@lsp.type.typeParameter', { fg = '#ffffff' })
-          hl(0, '@lsp.type.variable', { fg = '#ffffff' })
+          vim.lsp.semantic_tokens.enable(not vim.lsp.semantic_tokens.is_enabled)
+          if vim.fn.exists('g:syntax_on') == 1 then
+            vim.cmd('syntax off')
+          else
+            vim.cmd('syntax enable')
+          end
         end, {})
 
         local function virtual_text_document(params)
@@ -574,6 +462,7 @@ inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithMo
         settings = {
           flavour = "mocha";
           show_end_of_buffer = false;
+          no_italic = true;
           integrations = {
             mini.enabled = true;
             lsp_trouble = true;
@@ -619,6 +508,16 @@ inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithMo
               repo = "crates.nvim";
               rev = "6bf1b4ceb62f205c903590ccc62061aafc17024a";
               hash = "sha256-ijuz7abSLNTjgeIThtV+MV6SMBWgcAWcPK7yYpB9HeI=";
+            };
+          })
+
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "lean.nvim";
+            src = pkgs.fetchFromGitHub {
+              owner = "Julian";
+              repo = "lean.nvim";
+              rev = "b7b330a9dd324c0d9d57bb7d9dcbaf871403d3ed";
+              hash = "sha256-AYClc7+z+0h5QfVGPGr7ZrzPuaD+IAMtHT/3ZnbSVLE=";
             };
           })
 
@@ -893,6 +792,7 @@ inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithMo
         blink-cmp = {
           enable = true;
           settings = {
+            completion.keyword.range = "full";
             keymap = {
               "<C-space>" = [
                 "show"

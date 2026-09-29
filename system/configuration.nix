@@ -1,6 +1,5 @@
 {
   inputs,
-  config,
   pkgs,
   username,
   hostname,
@@ -22,8 +21,9 @@
         "flakes"
       ];
       auto-optimise-store = true;
-      extra-substituters = [ "https://cache.garnix.io" ];
-      extra-trusted-public-keys = [ "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" ];
+      # RIP
+      # extra-substituters = [ "https://cache.garnix.io" ];
+      # extra-trusted-public-keys = [ "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" ];
     };
     gc = {
       automatic = true;
@@ -57,6 +57,7 @@
     networkmanager = {
       enable = true;
       dns = "none";
+      wifi.powersave = false;
     };
     nameservers = [
       # "127.0.0.1"
@@ -114,7 +115,15 @@
 
   services.tailscale.enable = true;
 
-  # use 
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = true;
+      PermitRootLogin = "yes";
+    };
+  };
+
+  # use
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
@@ -145,7 +154,7 @@
       "udev.log_level=0"
       # "video=eDP-1:2650x1600@60"
     ];
-    kernelPackages = pkgs.linuxPackages_6_11;
+    kernelPackages = pkgs.linuxPackages_latest;
   };
 
   # QMK keyboard
@@ -189,7 +198,7 @@
   };
 
   # CPU and GPU stuff
-  hardware.cpu.intel.updateMicrocode = true;
+  hardware.cpu.amd.updateMicrocode = true;
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -203,7 +212,6 @@
 
   services.xserver.enable = true;
   services.xserver.videoDrivers = [
-    "displaylink"
     "modesetting"
   ];
   services.hardware.bolt.enable = true;
@@ -220,7 +228,6 @@
         user = username;
       };
     };
-    vt = 1;
   };
 
   # services.xserver.desktopManager.gnome.enable = true;
@@ -233,9 +240,18 @@
   services.gnome.gnome-keyring.enable = true;
   services.gnome.localsearch.enable = true;
 
+  console = {
+    enable = true;
+    earlySetup = true;
+    useXkbConfig = true;
+    packages = with pkgs; [ terminus_font ];
+    font = "${pkgs.terminus_font}/share/consolefonts/ter-132n.psf.gz";
+  };
+
   services.xserver = {
-    xkb.layout = "us";
+    xkb.layout = "us,ir";
     xkb.variant = "";
+    xkbOptions = "ctrl:nocaps";
   };
 
   xdg.portal = {
@@ -253,7 +269,7 @@
     openFirewall = true;
   };
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -291,18 +307,7 @@
     };
   };
 
-  # environment.etc = {
-  #   "wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
-  #     bluez_monitor.properties = {
-  #       ["bluez5.enable-sbc-xq"] = true,
-  #       ["bluez5.enable-msbc"] = true,
-  #       ["bluez5.enable-hw-volume"] = true,
-  #       ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
-  #     }
-  #   '';
-  # };
-
-  fonts.packages = with pkgs; [ (nerdfonts.override { fonts = [ "FiraCode" ]; }) ];
+  fonts.packages = with pkgs; [ nerd-fonts.fira-code ];
   environment.pathsToLink = [ "/share/zsh" ];
   fonts.fontconfig.enable = true;
 
@@ -341,7 +346,6 @@
       direnvrcExtra = "export SHELL=$SHELL";
     };
 
-    file-roller.enable = true; # archive manager
     gnome-disks.enable = true; # disk manager
 
     # Add `open in foot` entry to nautilus

@@ -27,7 +27,7 @@
     ./obs.nix # OBS Studio
     ./zed # zed editor
 
-    # ./vesktop # discord
+    ./vesktop # discord
     # ./ags # bar, app launcher
   ];
 
@@ -44,6 +44,7 @@
   home = {
     inherit username homeDirectory;
     stateVersion = "24.05";
+    enableNixpkgsReleaseCheck = false;
     packages = with pkgs; [
       lutgen
       hmcl

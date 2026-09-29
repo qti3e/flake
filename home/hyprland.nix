@@ -4,7 +4,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    swww
+    awww
     wl-clipboard
     # wf-recorder
     sway-contrib.grimshot
@@ -15,13 +15,13 @@ in
   ];
 
   carburetor.themes = {
-    hyprland.enable = true;
+    hyprland.enable = false; # disabled - variables not working with new hyprland
     hyprlock.enable = true;
   };
 
   services.mako = {
     enable = true;
-    maxVisible = 3;
+    settings.max-visible = 3;
   };
 
   services.hypridle = {
@@ -51,40 +51,29 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-    plugins = with pkgs.hyprlandPlugins; [
-      hyprexpo
-    ];
+    configType = "hyprlang";
+    plugins = [ ];
     settings = {
-      plugins = {
-        hyprexpo = {
-          columns = 2;
-          gap_size = 20;
-          bg_col = "rgb(161616)";
-          workspace_method = "first 1";
-        };
-        hyprtrails = {
-          color = "rgba(4589ffcc)";
-        };
-      };
       debug.disable_logs = false;
-      exec = [
+      exec-once = [
         "mako"
 
         # This will make sure that xdg-desktop-portal-hyprland can get the required variables on startup.
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 
-        "swww-daemon -f xbgr"
+        "awww-daemon"
         "eww daemon"
         "eww open bar"
       ];
-      source = [ "./themes/regular.conf" ];
+      # source = [ "./themes/regular.conf" ]; # carburetor theme disabled
       # monitor = [
       #   # https://wiki.hyprland.org/Configuring/Monitors/
       #   ",2560x1600@165.00Hz, 0x0, 1"
       # ];
       input = {
         # bind ctrl to capslock key, ctrl hurts my pinky :(
-        "kb_options" = "ctrl:nocaps";
+        kb_options = "ctrl:nocaps";
+        kb_layout = "us,ir";
       };
       workspace = [
         # "m[0] w[t1], gapsout:80 80"
@@ -103,25 +92,24 @@ in
         layout = "dwindle";
         # gaps_out = 0;
         # gaps_in = 0;
-        "col.active_border" = "#131a24";
-        "col.inactive_border" = "$base";
+        "col.active_border" = "rgb(131a24)";
+        "col.inactive_border" = "rgb(1e1e2e)";
       };
       cursor = {
         inactive_timeout = 1;
       };
       dwindle = {
-        pseudotile = true;
         preserve_split = true;
       };
       group = {
-        "col.border_inactive" = "$saphire";
-        "col.border_active" = "$sky";
+        "col.border_inactive" = "rgb(74c7ec)";
+        "col.border_active" = "rgb(89dceb)";
         groupbar = {
           enabled = true;
-          text_color = "$text";
+          text_color = "rgb(cdd6f4)";
           priority = 0;
-          "col.active" = "$base";
-          "col.inactive" = "$crust";
+          "col.active" = "rgb(1e1e2e)";
+          "col.inactive" = "rgb(11111b)";
         };
       };
       decoration = {
@@ -146,16 +134,11 @@ in
         animate_mouse_windowdragging = false;
         close_special_on_empty = true;
       };
-      layerrule = [
-        "blur,bar*"
-        "ignorealpha,bar*"
-        "blur,quicksettings*"
-        "ignorealpha,quicksettings*"
-        "blur,notifications*"
-        "ignorealpha,notifications*"
-        "blur,applauncher*"
-        "ignorealpha,applauncher*"
-      ];
+      # layerrules disabled - syntax changed in hyprland 0.54+
+      # layerrule = [
+      #   "blur,bar*"
+      #   "ignorealpha,bar*"
+      # ];
       bindm = [
         "${mod},mouse:272,movewindow"
         "${mod},mouse:273,resizewindow"
@@ -186,8 +169,10 @@ in
           # Window management
           "${mod} SHIFT, E, exit"
           "${mod} SHIFT, Q, killactive"
-          "${mod}, R, togglesplit"
+          "${mod}, F, fullscreen, 0"
+          "${mod}, R, layoutmsg, togglesplit"
           "${mod} SHIFT, Space, togglefloating"
+          "${mod}, Space, exec, hyprctl switchxkblayout all next"
 
           # Groups
           "${mod}, G, togglegroup"

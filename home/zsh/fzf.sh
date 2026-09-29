@@ -68,7 +68,7 @@ _fzf_complete_git_post() {
 [ -n "$BASH" ] && complete -F _fzf_complete_git -o default -o bashdefault git
 
 # fzf: cd to ~/Code dir using Ctrl+o
-code() {
+cdir() {
   local OUT=$(fzf --ansi --reverse \
     --preview-window=border-left \
     --history ~/.fzf_history/code_cd \
@@ -82,8 +82,8 @@ code() {
   fi
   zle reset-prompt
 }
-zle -N code
-bindkey '^o' code
+zle -N cdir
+bindkey '^o' cdir
 
 # fzf: open file in neovim (sourced from git ls-files)
 vimopen() {

@@ -2,16 +2,21 @@
 {
   home = {
     packages = with pkgs; [
+      gh
+
       neovim
+      tmux
       tailscale
 
       deno
       curl
       gnumake
-      nodejs_23
+      nodejs
 
       litemdview
       graph-easy
+
+      glow
 
       inotify-tools
       nix-tree
@@ -23,6 +28,9 @@
       xq
       jq
 
+      bc
+      xxd
+
       bottom
       sqlite
 
@@ -33,6 +41,10 @@
       nyxt
 
       chromium
+      vscode
+
+      jfbview
+      fbterm
     ];
 
     sessionVariables = {

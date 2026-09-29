@@ -11,7 +11,6 @@
 
       nautilus # file explorer
       simple-scan # document scanner
-      torrential # torrent manager
 
       eog # photo viewer
       celluloid # video player
@@ -32,7 +31,10 @@
     };
   };
 
-  gtk.enable = true;
+  gtk = {
+    enable = true;
+    gtk4.theme = null; # Use new default behavior
+  };
 
   carburetor.themes.gtk = {
     enable = true;
